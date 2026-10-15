@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="description" content="2026 기술창업아카데미(NTS) 강원대학교 강릉산학협력단 보유특허 탐색 및 팀 보고서 작성 실습">
+<title>NTS 보유기술 탐색실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+[hidden]{display:none!important}
+img{max-width:100%}
+/* Layout: 상단 고정 헤더 + 2개 작업 탭(기술 탐색 / 팀 보고서). 탐색은 좌측 분야 레일 + 카드 그리드, 보고서 탭은 입력 폼 + 사이드 저장 패널 + 하단 A4 미리보기 */
+:root{
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#14302c; --muted:#5a6f6b; --line:#d5e0dd;
+  --accent:#0b6e63; --accent-ink:#ffffff; --accent-soft:#dcefeb; --pick:#c2571b; --pick-soft:#fbe9de;
+  --font-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --font-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:10px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1716; --surface:#16211f; --ink:#e3eeeb; --muted:#93a8a3; --line:#2a3a37;
+  --accent:#4fc1b0; --accent-ink:#06201c; --accent-soft:#1c3531; --pick:#f08a4e; --pick-soft:#3a2418; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1716; --surface:#16211f; --ink:#e3eeeb; --muted:#93a8a3; --line:#2a3a37;
+  --accent:#4fc1b0; --accent-ink:#06201c; --accent-soft:#1c3531; --pick:#f08a4e; --pick-soft:#3a2418; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.6;margin:0}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:var(--surface);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;padding-block:12px}
+.brand{display:flex;flex-direction:column;min-width:0}
+.brand small{font-size:12px;color:var(--muted);letter-spacing:.04em}
+.brand strong{font-size:18px;font-weight:700}
+.tabs{display:flex;gap:4px;margin-left:auto}
+.tabs button{font:inherit;font-weight:600;border:1px solid var(--line);background:transparent;color:var(--ink);padding:8px 14px;border-radius:999px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.tabs .cnt{font-family:var(--font-mono);font-size:12px;margin-left:4px}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible,a:focus-visible{outline:2px solid var(--pick);outline-offset:2px}
+main{padding-block:20px 60px}
+.intro{display:flex;flex-wrap:wrap;gap:12px 28px;align-items:baseline;margin-bottom:18px}
+.intro h1{font-size:22px;margin:0;text-wrap:balance}
+.intro p{margin:0;color:var(--muted);max-width:68ch}
+.flow{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;padding:0;list-style:none}
+.flow li{font-size:12.5px;border:1px solid var(--line);border-radius:6px;padding:4px 10px;background:var(--surface);color:var(--muted)}
+.flow li b{color:var(--accent);font-family:var(--font-mono);font-weight:500;margin-right:4px}
+/* explore */
+.explore{display:grid;grid-template-columns:240px 1fr;gap:20px}
+@media (max-width:820px){.explore{grid-template-columns:1fr}}
+.rail{display:flex;flex-direction:column;gap:4px;align-self:start;position:sticky;top:90px}
+@media (max-width:820px){.rail{position:static;flex-direction:row;flex-wrap:wrap}}
+.rail button{font:inherit;text-align:left;display:flex;justify-content:space-between;gap:8px;border:0;background:transparent;color:var(--ink);padding:7px 10px;border-radius:8px;cursor:pointer}
+@media (max-width:820px){.rail button{border:1px solid var(--line);padding:5px 10px;font-size:13px}}
+.rail button:hover{background:var(--accent-soft)}
+.rail button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.rail .n{font-family:var(--font-mono);font-size:12.5px;opacity:.8}
+.results{min-width:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.toolbar input[type=search]{flex:1 1 240px;font:inherit;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--surface);color:var(--ink)}
+.toolbar label{font-size:13px;color:var(--muted);display:flex;gap:6px;align-items:center}
+.toolbar select{font:inherit;font-size:13px;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
+.catdesc{font-size:13.5px;color:var(--muted);margin:0 0 12px;max-width:80ch}
+.meta-line{font-size:13px;color:var(--muted);margin-bottom:10px;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card.on{border-color:var(--pick);box-shadow:inset 0 0 0 1px var(--pick)}
+.card .row{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.tag{font-size:11.5px;font-weight:600;padding:2px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent);white-space:nowrap}
+.yr{font-family:var(--font-mono);font-size:12px;color:var(--muted)}
+.card h3{font-size:14.5px;font-weight:600;margin:0;line-height:1.45;overflow-wrap:anywhere}
+.nums{font-family:var(--font-mono);font-size:12px;color:var(--muted);overflow-wrap:anywhere}
+.card .acts{display:flex;gap:8px;margin-top:auto;padding-top:4px;align-items:center}
+.btn{font:inherit;font-size:13px;font-weight:600;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:6px 12px;border-radius:7px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn:hover{border-color:var(--accent)}
+.btn.pick{border-color:var(--pick);color:var(--pick)}
+.btn.pick[aria-pressed="true"]{background:var(--pick);color:var(--surface)}
+.btn.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+.more{display:flex;justify-content:center;margin-top:14px}
+/* worksheet */
+.ws{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:24px;align-items:start}
+@media (max-width:900px){.ws{grid-template-columns:1fr}}
+.sec{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.sec h2{font-size:16px;margin:0 0 4px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.sec h2 code{font-family:var(--font-mono);font-size:12.5px;color:var(--accent);font-weight:500}
+.sec h2 .time{font-size:12px;color:var(--muted);font-weight:400}
+.sec .hint{font-size:13px;color:var(--muted);margin:0 0 14px}
+.f{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+.f label{font-size:13px;font-weight:600}
+.f input,.f textarea,.f select{font:inherit;font-size:14px;padding:8px 10px;border:1px solid var(--line);border-radius:7px;background:var(--bg);color:var(--ink);width:100%}
+.f textarea{min-height:70px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+@media (max-width:560px){.two{grid-template-columns:1fr}}
+.short{display:flex;flex-direction:column;gap:8px}
+.short .it{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:8px;background:var(--bg)}
+.short .it input{margin-top:5px;accent-color:var(--pick)}
+.short .it label{flex:1;min-width:0;font-size:14px;cursor:pointer}
+.short .it .x{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1}
+.trl{display:flex;flex-direction:column;gap:4px}
+.trl label{display:grid;grid-template-columns:auto 34px 1fr;gap:8px;align-items:start;font-size:13.5px;padding:6px 8px;border-radius:6px;cursor:pointer}
+.trl label:hover{background:var(--accent-soft)}
+.trl input{accent-color:var(--accent);margin-top:4px}
+.trl b{font-family:var(--font-mono);color:var(--accent)}
+.trl .grp{font-size:11.5px;color:var(--muted);letter-spacing:.05em;padding:6px 8px 0}
+.score{display:grid;grid-template-columns:110px 1fr 28px;gap:10px;align-items:center;margin-bottom:8px;font-size:14px}
+.score input{accent-color:var(--accent);width:100%}
+.score output{font-family:var(--font-mono);text-align:right}
+aside.side{position:sticky;top:90px;display:flex;flex-direction:column;gap:12px}
+@media (max-width:900px){aside.side{position:static}}
+.chosen{background:var(--pick-soft);border:1px solid var(--pick);border-radius:var(--r);padding:14px}
+.chosen small{font-size:11.5px;letter-spacing:.06em;color:var(--pick);font-weight:700}
+.chosen p{margin:6px 0 0;font-weight:600;overflow-wrap:anywhere}
+.chosen .nums{margin-top:4px}
+.prog{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.prog ol{margin:8px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:6px;font-size:13.5px}
+.prog li{display:flex;gap:8px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--line);flex:none}
+.dot.ok{background:var(--accent);border-color:var(--accent)}
+.copyrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.toast{font-size:13px;color:var(--accent)}
+.ev{display:flex;flex-direction:column;gap:10px}
+.evrow{border:1px solid var(--line);border-radius:8px;padding:12px;background:var(--bg);display:grid;grid-template-columns:150px 1fr 1fr;gap:8px 10px}
+.evrow .full{grid-column:1/-1}
+.evrow .head{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700;color:var(--accent)}
+.evrow input,.evrow select,.evrow textarea{font:inherit;font-size:13.5px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink);width:100%;min-width:0}
+.evrow textarea{min-height:54px;resize:vertical}
+.evrow .bad{border-color:var(--pick)}
+@media (max-width:640px){.evrow{grid-template-columns:1fr}}
+.dlbox{display:flex;flex-direction:column;gap:8px}
+.dlbox .btn{justify-content:center;padding:10px 12px;font-size:14px}
+.dlnote{font-size:12.5px;color:var(--muted);margin:0}
+.paperwrap{overflow-x:auto;background:var(--line);border-radius:var(--r);padding:20px}
+/* 보고서 지면: 인쇄물이므로 테마와 무관하게 흰 종이·검정 글자로 고정 */
+#paper{width:720px;margin:0 auto;background:#ffffff;color:#1b2422;font-family:var(--font-body);font-size:12.5px;line-height:1.6;padding:34px 38px}
+#paper h1{font-size:19px;margin:0 0 2px;color:#0b4f47}
+#paper .eyebrow{font-size:11px;letter-spacing:.06em;color:#5a6f6b}
+#paper .hdr{border-bottom:2px solid #0b4f47;padding-bottom:10px;margin-bottom:14px}
+#paper .kv{display:grid;grid-template-columns:90px 1fr;gap:3px 12px;margin-top:8px}
+#paper .kv b{color:#5a6f6b;font-weight:600}
+#paper h2{font-size:14px;margin:18px 0 6px;color:#0b4f47;border-bottom:1px solid #cfdcd9;padding-bottom:3px}
+#paper table{width:100%;border-collapse:collapse;font-size:11.5px}
+#paper th,#paper td{border:1px solid #cfdcd9;padding:5px 7px;text-align:left;vertical-align:top}
+#paper th{background:#eef4f3;font-weight:600;white-space:nowrap}
+#paper a{color:#0b6e63;word-break:break-all}
+#paper p{margin:0 0 4px}
+#paper .empty-v{color:#9aa9a6}
+#paper .foot{margin-top:20px;padding-top:8px;border-top:1px solid #cfdcd9;font-size:10px;color:#6b7c79}
+@media print{
+  header.top,footer,#view-explore,.intro,.ws>div>.sec,aside.side,.paperhead{display:none!important}
+  #view-ws{display:block!important}
+  .paperwrap{background:none;padding:0;overflow:visible}
+  #paper{width:auto;padding:0}
+  body{background:#fff}
+}
+footer{border-top:1px solid var(--line);padding-block:18px;color:var(--muted);font-size:12.5px}
+footer p{margin:4px 0;max-width:100ch}
+.sel{user-select:all;font-family:var(--font-mono)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><small>2026 기술창업아카데미(NTS) · 강원대학교 강릉산학협력단</small><strong>보유기술 탐색실</strong></div>
+    <div class="tabs" role="tablist">
+      <button role="tab" id="tab-explore" aria-selected="true" aria-controls="view-explore">기술 탐색</button>
+      <button role="tab" id="tab-ws" aria-selected="false" aria-controls="view-ws">팀 보고서<span class="cnt" id="pickCnt">0/3</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="view-explore" role="tabpanel" aria-labelledby="tab-explore">
+    <div class="intro">
+      <h1>강릉·원주캠퍼스 등록특허 Pool</h1>
+      <p>분야를 고르고 제목을 훑어본 뒤, 팀이 사업화해 보고 싶은 기술을 최대 3개까지 <b>관심 기술</b>로 담으세요. 담은 기술은 ‘팀 보고서’ 탭에서 1개로 좁혀 보고서를 만듭니다.</p>
+    </div>
+    <ul class="flow" aria-label="1일차 실습 흐름">
+      <li><b>14:00</b>[TX] 기술 진단</li><li><b>15:00</b>[MX] 시장·경쟁력</li><li><b>16:00</b>[IP-①] 지식재산권 특강</li><li><b>17:00</b>[TE-①] 보유기술 매칭·BM 초안</li><li><b>19:00</b>[BM] 슘페터 3.0 사업화</li>
+    </ul>
+    <div class="explore">
+      <nav class="rail" id="rail" aria-label="기술 분야"></nav>
+      <div class="results">
+        <div class="toolbar">
+          <input type="search" id="q" placeholder="키워드 검색 (예: 멍게, 근감소, 커넥티드카, 세라믹)" aria-label="키워드 검색">
+          <label for="since">등록연도<select id="since"><option value="0">전체</option><option value="2020">2020년 이후</option><option value="2016">2016년 이후</option></select></label>
+          <label for="sort">정렬<select id="sort"><option value="new">최신순</option><option value="old">오래된순</option><option value="title">가나다순</option></select></label>
+        </div>
+        <p class="catdesc" id="catdesc"></p>
+        <div class="meta-line" id="meta"></div>
+        <div class="grid" id="grid"></div>
+        <div class="more"><button class="btn" id="moreBtn" hidden>더 보기</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="view-ws" role="tabpanel" aria-labelledby="tab-ws" hidden>
+    <div class="intro">
+      <h1>팀 보고서 작성</h1>
+      <p>팀이 상의해 정한 특허와 근거 자료를 정리하면 아래에 A4 보고서가 바로 만들어집니다. <b>PDF 다운로드</b> 후 패들렛 팀 칸에 올려 주세요. 입력 내용은 이 기기 브라우저에만 저장되고 다른 팀과 공유되지 않습니다.</p>
+    </div>
+    <div class="ws">
+      <div>
+        <div class="sec">
+          <h2>1. 팀 정보와 활용 특허 <code>TE-①</code></h2>
+          <p class="hint">‘기술 탐색’에서 담은 관심 기술 중 최종 1개를 고르세요. 나머지는 ‘검토한 후보 기술’로 보고서에 함께 실립니다.</p>
+          <div class="two">
+            <div class="f"><label for="team">팀명</label><input id="team" placeholder="예: 블루씨랩"></div>
+            <div class="f"><label for="item">아이템명(가칭)</label><input id="item" placeholder="예: 멍게 유래 인지건강 젤리"></div>
+          </div>
+          <div class="f"><label for="members">팀원 이름과 역할</label><input id="members" placeholder="예: 김OO(대학원·기술), 이OO(마케팅) — 연락처·학번은 적지 마세요"></div>
+          <div class="short" id="short"></div>
+          <div class="f" style="margin-top:12px"><label for="why">이 특허를 고른 이유</label><textarea id="why" placeholder="팀원 전공·경험과의 연결, 관심 시장, 다른 후보 대비 장점"></textarea></div>
+        </div>
+
+        <div class="sec">
+          <h2>2. 기술 이해 <code>TX</code></h2>
+          <p class="hint">‘원문 보기’로 특허 초록을 읽고 팀의 말로 풀어 쓰세요.</p>
+          <div class="f"><label for="plain">이 기술은 한 문장으로…</label><textarea id="plain" placeholder="무엇을, 어떤 원리로, 기존보다 무엇이 나아지는지"></textarea></div>
+          <div class="f"><label>현재 기술성숙도(TRL) 추정</label><div class="trl" id="trl"></div></div>
+          <div class="f"><label for="gap">사업화까지 남은 과제</label><textarea id="gap" placeholder="예: 대량 추출 공정, 인체적용시험, 인증"></textarea></div>
+        </div>
+
+        <div class="sec">
+          <h2>3. 시장과 고객 <code>MX</code></h2>
+          <div class="f"><label for="problem">해결하려는 문제</label><textarea id="problem"></textarea></div>
+          <div class="two">
+            <div class="f"><label for="customer">목표 고객</label><textarea id="customer" placeholder="누가, 어디서 이 문제를 겪는가"></textarea></div>
+            <div class="f"><label for="alt">현재 대안·경쟁 제품</label><textarea id="alt"></textarea></div>
+          </div>
+          <div class="f"><label for="diff">우리 기술의 차별점</label><textarea id="diff"></textarea></div>
+        </div>
+
+        <div class="sec">
+          <h2>4. 근거 자료 <span class="time">3건 이상 권장</span></h2>
+          <p class="hint">시장 규모, 고객 문제, 경쟁 제품을 뒷받침하는 기사·통계·보고서를 검색해 넣으세요. 수치는 출처와 기준연도를 함께 적습니다.</p>
+          <div class="ev" id="ev"></div>
+          <div class="copyrow"><button class="btn" id="addEv">근거 자료 추가</button></div>
+        </div>
+
+        <div class="sec">
+          <h2>5. 사업화 아이디어 <code>BM · IP</code></h2>
+          <div class="f"><label for="product">제품·서비스 형태</label><textarea id="product"></textarea></div>
+          <div class="f"><label for="value">핵심 가치제안</label><textarea id="value"></textarea></div>
+          <div class="two">
+            <div class="f"><label for="revenue">수익모델</label>
+              <select id="revenue"><option value="">선택</option><option>제품 판매</option><option>B2B 소재·원료 공급</option><option>구독형 서비스</option><option>라이선스·로열티</option><option>플랫폼 수수료</option><option>용역·솔루션 구축</option><option>기타</option></select></div>
+            <div class="f"><label for="license">기술이전 방식(가정)</label>
+              <select id="license"><option value="">선택</option><option>통상실시권</option><option>전용실시권</option><option>특허 양도</option><option>공동연구 후 이전</option><option>미정(상담 필요)</option></select></div>
+          </div>
+          <div class="f"><label for="mvp">MVP·프로토타입 계획</label><textarea id="mvp" placeholder="캠프 이후 4주 안에 만들 수 있는 가장 작은 버전"></textarea></div>
+          <div class="two">
+            <div class="f"><label for="tm">상표 후보</label><input id="tm"></div>
+            <div class="f"><label for="newip">개량특허 아이디어</label><input id="newip"></div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="chosen" id="chosen"><small>최종 선택 특허</small><p>아직 선택하지 않았습니다</p></div>
+        <div class="prog"><strong style="font-size:14px">작성 진행</strong><ol id="prog"></ol></div>
+        <div class="prog dlbox">
+          <strong style="font-size:14px">보고서 저장</strong>
+          <button class="btn primary" id="pdfBtn">PDF 다운로드</button>
+          <button class="btn" id="printBtn" hidden>인쇄 창에서 PDF로 저장</button>
+          <p class="dlnote" id="dlnote">파일 이름: NTS_팀명_보유기술활용보고서.pdf</p>
+          <button class="btn" id="resetBtn">작성 내용 비우기</button>
+        </div>
+        <div class="prog" style="font-size:13px"><strong style="font-size:14px">기술이전 상담</strong>
+          <p style="margin:6px 0 0;color:var(--muted)">강원대학교 강릉산학협력단 기술경영</p>
+          <p style="margin:2px 0 0">이메일 <span class="sel">tlo@kangwon.ac.kr</span><br>전화 <span class="sel">033-640-2838</span></p>
+        </div>
+      </aside>
+    </div>
+
+    <div class="sec paperhead" style="margin-top:8px"><h2>보고서 미리보기</h2><p class="hint" style="margin:0">입력하는 대로 갱신됩니다. 이 모습 그대로 PDF로 저장됩니다.</p></div>
+    <div class="paperwrap"><div id="paper"></div></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><b>출처</b> 강원대학교 강릉산학협력단 ‘지식재산권 검색’ 공개 목록(iacg.gwnu.ac.kr) 중 종류가 ‘특허’인 303건, 2026.10.15 수집. 같은 명칭의 국내·해외 특허는 한 카드로 묶었습니다.</p>
+    <p><b>분야 분류</b>는 특허 명칭만 보고 운영사가 실습 편의를 위해 나눈 것으로, 공식 기술분류(IPC)와 다를 수 있습니다. 권리 유효 여부와 기술이전 가능 여부는 산학협력단 확인이 필요합니다.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script>
+const CATS = {
+  NB:["바이오헬스 소재","해양·천연물 추출물, 신규 화합물 기반의 건강기능식품·의약 조성물. NTS(Natural Material Technology Startup) 주제와 가장 가까운 분야입니다."],
+  FD:["식품·발효","가공식품, 발효음료, 식물성 단백질 등 바로 제품화를 상상하기 쉬운 식품 기술입니다."],
+  BT:["뷰티·생활용품","화장품, 샴푸, 입욕제, 주방용기, 생활 소품처럼 소비자에게 직접 판매하는 제품군입니다."],
+  MD:["의료기기·치의학","내시경 기구, 수술용 클립, 척추 커넥터, 임플란트 코팅 등 의료 현장용 기기와 소재입니다."],
+  DX:["진단·분석 센서","분석물질·핵산·세균 검출 칩, 랩온어칩 등 진단과 계측용 기술입니다."],
+  DH:["디지털 헬스케어","AI·VR·로봇을 활용한 진단 보조, 간호교육, 건강관리 서비스 기술입니다."],
+  AI:["AI·소프트웨어·데이터","머신러닝 자동화, 빅데이터, 영상 분석, 콘텐츠 처리 등 소프트웨어 기술입니다."],
+  IC:["통신·IoT·모빌리티","무선 센서 네트워크, 커넥티드카, 변복조, 수중 위치인식 등 연결 기술입니다."],
+  SM:["반도체·전자·신소재","세라믹 유전체, RF 부품, 인메모리 소자, 탄화규소·나노소재 등 소재·부품 기술입니다."],
+  ME:["기계·금속·공정","금속 반복가공, 단조, 가스터빈, 정밀 위치제어, 재료 시험장치 기술입니다."],
+  EN:["환경·에너지·위성기상","위성 원격탐사, 태양복사, 대기환경, 바이오연료, 자성유체 발전 기술입니다."],
+  CS:["건설·안전·방재","콘크리트 포장, 사방댐, 내진 보강, 방사선 차폐, 매몰자 탐지 등 인프라·재난 기술입니다."],
+  AG:["농수산·양식","스마트 과일재배, 해충 탐지, 다슬기·복족류 양식, 수산 백신 등 1차산업 기술입니다."]
+};
+const RAW = [
+[2025,"10-2752140","청각 추출물 및 아라키돈산을 유효성분으로 포함하는 면역증진용 식품 조성물","NB"],
+[2025,"10-2752006","인공지능 로봇을 활용한 사용자 심리 상태를 평가하는 방법 및 장치","DH"],
+[2025,"10-2764586","까나리 지질 추출물을 유효성분으로 포함하는 면역증진용 조성물","NB"],
+[2025,"10-2764584","까나리 지질 추출물을 유효성분으로 포함하는 항염증용 조성물","NB"],
+[2025,"10-2803976","때죽나무 잎 추출물을 포함하는 근력강화용 조성물","NB"],
+[2025,"10-2767626","가상현실 기반 저혈량성 쇼크 대상자 간호 시뮬레이션 교육 프로그램을 제공하는 전자 장치,및 VR 장치","DH"],
+[2025,"10-2831992","핵산효소를 이용한 분석물질 검출 방법","DX"],
+[2025,"10-2844359","브레이징 필러 와이어용 금형 구조체, 이를 이용한 브레이징 필러 와이어의 제조방법, 브레이징 필러 와이어를 이용한 링형 필러재 및 링형 필러재의 제조방법","ME"],
+[2025,"10-2781045","당뇨에 의한 남성 성기능 장애 또는 불임의 치료를 위한 4-헥실레조르시놀의 용도","NB"],
+[2025,"10-2803912","도커 기반의 빅데이터 처리 환경 구축 시스템 및 방법","AI"],
+[2025,"10-2860118","고막 영상 분석을 통한 귀 질환 진단 장치 및 방법","DH"],
+[2025,"10-2795784","신규한 골 재생용 세리신 제조 방법 및 이의 용도","MD"],
+[2025,"10-2832710","당뇨병 또는 당뇨합병증의 치료를 위한 4-헥실레조르시놀의 용도","NB"],
+[2025,"10-2810432","네트워크에 포함되는 각 노드의 배치를 결정하는 전자 장치의 제어 방법","IC"],
+[2025,"10-2870701","네트워크에 포함되는 각 블록의 노드 할당 영역 내 노드를 배치하는 전자 장치의 제어 방법","IC"],
+[2025,"10-2800025","내향성 네일 교정용 리프팅 장치","MD"],
+[2025,"10-2761207","영상을 이용한 요압 측정 방법 및 장치","MD"],
+[2025,"10-2880854","저온동시소성용 세라믹 유전체 조성물 및 그의 제조 방법","SM"],
+[2025,"10-2880680","식물성 단백질의 응집체 및 이의 겔화물, 및 이들의 제조 방법","FD"],
+[2025,"10-2847481","식물성 단백질, 미강과 비타민나무잎을 포함하는 발효음료 및 이의 제조 방법","FD"],
+[2025,"10-2791841","RF 트랜스포머를 포함하는 광대역 전력 증폭기","SM"],
+[2025,"10-2753026","영상 모니터링 시스템","AI"],
+[2025,"10-2800026","부품 교체형 내향성 네일 교정용 리프팅 장치","MD"],
+[2025,"10-2791956","차동 전력 증폭기의 출력단용 LTCC 기반 RF 트랜스포머","SM"],
+[2025,"10-2843796","이산화티탄 나노섬유 및 그 제조방법","SM"],
+[2025,"10-2844077","공급호스, 및 강풍 환경에서 활용 가능한 위한 소화 시스템","CS"],
+[2025,"10-2836357","두유 및 녹두유를 이용한 식물성 요구르트 및 그 제조 방법","FD"],
+[2025,"10-2797287","파지구 회전이 용이한 내시경용 처치기구","MD"],
+[2025,"10-2820373","외과 수술용 클립 어플라이어","MD"],
+[2025,"10-2793921","매트릭스 구조를 갖는 구리 모듈에 균일하게 배열되는 광섬유를 활용한 열량 검출 장치","SM"],
+[2025,"10-2836589","사용자의 걸음걸이를 감지하여 사용자 인증을 수행하는 전자 장치 및 이의 제어 방법","AI"],
+[2025,"10-2842031","복사 기상 정보 서비스 제공 방법 및 장치","EN"],
+[2025,"10-2856201","인공지능 기반으로 기단의 이동경로를 예측하는 방법 및 장치","EN"],
+[2025,"10-2801185","그래프 기반의 인공신경망을 이용한 경계표면 모델에서 기계가공 특징형상 분할 방법 및 이를 기록한 기록매체","AI"],
+[2025,"10-2870037","인-메모리 컴퓨팅을 위한 수직 낸드 플래시 구조에 기반한 양성피드백 전계효과 트랜지스터","SM"],
+[2025,"10-2845322","프로세싱-인-메모리 구현을 위한 2T-DRAM 어레이 및 이를 이용한 논리 연산 동작 방법","SM"],
+[2025,"10-2862465","매몰자 탐지장치","CS"],
+[2025,"10-2862466","음성 송수신이 가능한 매몰자 탐지장치","CS"],
+[2025,"10-2819426","구멍쇠미역 추출물로부터 분리된 화합물을 포함하는 근육질환의 예방 또는 치료용 조성물","NB"],
+[2025,"ZL 202011090542.4","금속을 반복하여 가공하는 방법","ME"],
+[2024,"10-2672297","표고버섯 균사 배양 여액 유래 만난을 포함하는 세포외 다당류의 생산방법","NB"],
+[2024,"10-2668691","코팅 탄화 코르크용 천연 점착 서스펜션 조성물, 동 조성물을 이용한 코팅 탄화 코르크의 제조방법 및 동 방법에 의해 얻어진 코팅 탄화 코르크를 포함하는 압축 성형품","SM"],
+[2024,"10-2724306","4-헥실레소르시놀을 유효성분으로 포함하는 여성의 폐경기 비만 치료 또는 예방용 조성물","NB"],
+[2024,"10-2692405","무인주행체를 이용한 스마트 과일재배 시스템","AG"],
+[2024,"10-2707247","하상 보호용 구조물 및 그 시공방법","CS"],
+[2024,"10-2747538","중력을 이용하는 자성입자 기반 바이오칩 및 이를 이용한 분석물질 검출 방법","DX"],
+[2024,"10-2679268","가스터빈 연소기 별 맞춤형 인공지능 모델을 통한, 연소 불안정 판단을 수행하는 전자 장치의 제어 방법","ME"],
+[2024,"10-2750144","물체 크기 측정 기능을 구비한 실시간 영상 감시 시스템","AI"],
+[2024,"10-2717591","콘크리트의 내부에 매설된 FRP 보강재의 휨-인장 거동 평가용 시험장치","CS"],
+[2024,"10-2707248","콘크리트의 외부에 부착된 FRP 보강재의 휨-인장 거동 평가용 시험장치","CS"],
+[2024,"10-2682939","개질유황분말 제조장치","SM"],
+[2024,"US 12,092,773 B2","X-RAY DETECTOR WITH INTERDIGITATED NETWORK","SM"],
+[2024,"10-2668242","고병원성 비브리오 앙귈라럼 RTBHR 균주 및 이를 이용한 백신 조성물","AG"],
+[2024,"US 11,983,024 B2","전자 장치에 의해 수행되는 고정밀 위치 제어를 위한 강인한 최적 외란 관측기를 포함하는 시스템 및 제어 방법","ME"],
+[2024,"10-2655961","4-헥실레조르시놀을 유효성분으로 포함하는 항노화용 조성물","NB"],
+[2024,"10-2639750","흡인세척장치","MD"],
+[2024,"10-2628825","약액 주입용 내시경 시술 기구","MD"],
+[2024,"10-2622824","의료용 도포장치","MD"],
+[2024,"10-2621660","5G 이동통신 부품용 저유전손실 유전체 세라믹 조성물 및 이의 제조방법","SM"],
+[2023,"10-2617009","고압증기 멸균이 가능한 내시경용 핫 바이옵시 포셉","MD"],
+[2023,"10-2615928","초미세 찹쌀가루를 이용한 부각의 제조방법","FD"],
+[2023,"10-2609326","외과용 클립 어플라이어","MD"],
+[2023,"10-2609327","좌굴 방비 외과용 클립 어플라이어","MD"],
+[2023,"10-2601836","휴대용 자외선 살균기","BT"],
+[2023,"10-2589755","상온 발효 유산균(Enterococcus faecium MSS2) 대사산물의 Trichoderma hazianum에 대한 성장억제 활성 및 조성물","AG"],
+[2023,"3610812","스크류 헤드 및 로드 동시 고정형 커넥터","MD"],
+[2023,"10-2588090","플라즈마 발 치료기","MD"],
+[2023,"10-2566433","커피 실버스킨 추출물, 이의 분획물 또는 이로부터 분리된 화합물을 포함하는 근육질환의 예방 또는 치료용 조성물","NB"],
+[2023,"10-2560213","이산화루테늄-은 복합체 제조방법","SM"],
+[2023,"10-2560281","매트릭스 구조를 갖는 구리 모듈에 균일하게 배열되는 광섬유를 활용한 열량 검출 장치","SM"],
+[2023,"10-2555254","부피측정 칩 및 이를 이용한 분석물질 검출방법","DX"],
+[2023,"10-2553834","범람 방지용 물막이 구조물 및 그 시공방법","CS"],
+[2023,"10-2551720","격자구조 변조심볼 생성방법 및 장치","IC"],
+[2023,"10-2548828","해충 탐지 장치","AG"],
+[2023,"10-2541441","플로레틴과 TRAIL을 유효성분으로 포함하는 항암용 조성물","NB"],
+[2023,"10-2536713","레불린산으로부터 R형 감마발레로락톤의 선택적 효소-화학적 합성법","SM"],
+[2023,"10-2535921","원격 탐사 센서의 적외선 채널을 이용한 폭발 화재와 스모크 탐지 장치 및 방법","EN"],
+[2023,"10-2524820","약물 복용 관리 장치 및 방법","DH"],
+[2023,"10-2520240","비음수 행렬 인수분해를 이용하는 데이터 증강 방법 및 장치","AI"],
+[2023,"10-2519758","바이오매스로부터 바이오디젤의 제조 방법","EN"],
+[2023,"10-2517691","색차 기반 신경망 학습데이터 변환 장치 및 그 방법","AI"],
+[2023,"10-2517350","커피 성분이 함유된 미용팩 및 이의 제조방법","BT"],
+[2023,"10-2516469","고정영역의 지표영상 획득 장치 및 방법","EN"],
+[2023,"10-2508544","고순도 탄화규소(SiC)의 제조방법","SM"],
+[2023,"10-2490858","인공지능 기반 태양 복사량 및 대기 투과도 결정 장치 및 방법","EN"],
+[2023,"10-2485924","광학 센서의 원격 탐사 데이터를 이용한 딥러닝 기반 에어로솔 광학 두께 산출 장치 및 방법","EN"],
+[2023,"10-2485194","LFRFamide 펩타이드를 유효성분으로 함유하는 복족류의 산란 유도용 조성물","AG"],
+[2022,"10-2475108","최적화된 하이퍼파라미터를 갖는 기계 학습 모델링 자동화 방법 및 이를 이용한 기계 학습 모델링 자동화 시스템","AI"],
+[2022,"10-2462809","전도성 그라우트 조성물 및 이를 이용한 전기비저항 측정방법","CS"],
+[2022,"10-2462076","음악 검색 장치 및 방법","AI"],
+[2022,"11,478,841","금속을 반복하여 가공하는 방법","ME"],
+[2022,"10-2458825","핵산 검출 방법","DX"],
+[2022,"10-2458330","수직 콘크리트 구조물에 대한 가압 침투식 광촉매 고정방법","CS"],
+[2022,"10-2454881","골재 노출시기 선정을 통한 고기능성 소입경 골재노출 콘크리트 포장 시공방법","CS"],
+[2022,"10-2448169","딥러닝 기반 치아 교정치료 결과 예측 방법 및 장치","DH"],
+[2022,"10-2436140","단분산 이산화루테늄 입자 제조방법","SM"],
+[2022,"10-2410546","법제유황과 천연광물이 함유된 과립 입욕제 및 이의 제조방법","BT"],
+[2022,"10-2409101","결측값 대체 시스템 및 결측값 대체 방법","AI"],
+[2022,"10-2406165","아무르불가사리 지방산을 유효성분으로 포함하는 염증 질환 예방 또는 치료용 조성물","NB"],
+[2022,"10-2406166","아무르불가사리 지방산을 유효성분으로 포함하는 면역 증강용 조성물","NB"],
+[2022,"10-2406037","삼치가수분해물의 항노화 효과 및 조성물","NB"],
+[2022,"10-2395605","분석물질 검출장치 및 이를 이용한 검출방법","DX"],
+[2022,"10-2395598","분석물질 검출장치 및 이를 이용한 검출방법","DX"],
+[2022,"10-2389404","지표면에서의 하향 단파 복사 산출 방법","EN"],
+[2022,"10-2382501","해삼 효소추출물의 알츠하이머성 치매 질환 예방 및 치료용 조성물","NB"],
+[2022,"10-2376512","4-헥실레소르시놀을 유효성분으로 포함하는 골질환 예방 또는 치료용 약학조성물","NB"],
+[2022,"10-2375355","전자 장치에 의해 수행되는 고정밀 위치 제어를 위한 강인한 최적 외란 관측기를 포함하는 시스템 및 제어 방법","ME"],
+[2022,"10-2366058","정지궤도 인공위성의 모의 반사도 결정 방법","EN"],
+[2022,"10-2365295","금속을 반복하여 가공하는 방법","ME"],
+[2022,"10-2365296","금속을 반복하여 가공하는 방법","ME"],
+[2022,"10-2365297","다축대각단조 장치","ME"],
+[2022,"10-2365266","미나리 유래 폴리펩티드 및 상기 폴리펩티드를 포함하는 약학적 조성물","NB"],
+[2022,"7028941","금속을 반복하여 가공하는 방법","ME"],
+[2022,"10-2351151","콤플렉스 콜로이드 제조 기술을 이용한 다공성의 해조류 입자 제조방법 입자 제조방법 및 이를 이용한 유기질 비료 제조 방법","AG"],
+[2022,"10-2348422","대지 저항을 이용한 데이터 수집 장치 및 방법","IC"],
+[2021,"11,202,658","스크류 헤드 및 로드 동시 고정형 커넥터","MD"],
+[2021,"10-2336454","핵산 검출 방법","DX"],
+[2021,"10-2336009","멍게껍질 추출액이 풍부한 기정떡의 제조방법","FD"],
+[2021,"10-2328372","분석물질을 검출하는 장치 및 이를 이용한 검출방법","DX"],
+[2021,"10-2318827","호흡 훈련을 통한 고혈압 치료 방법 및 장치","DH"],
+[2021,"10-2317259","4-헥실레졸시놀을 유효성분으로 포함하는 교정적 치아 이동 촉진용 조성물","NB"],
+[2021,"10-2309547","코골이 호흡 특성을 분석하기 위한 장치 및 그 방법","DH"],
+[2021,"10-2308317","치매 노인을 위한 회상 요법 제공 방법 및 그 시스템","DH"],
+[2021,"10-2298505","정맥주사 수행평가 장치 및 방법","DH"],
+[2021,"10-2284697","위치 정보 기반 미세먼지 흡입량 정보 측정 시스템, 방법 및 프로그램","EN"],
+[2021,"10-2283528","상온발효 가능한 엔테로코쿠스 파에시움 MSS2 유산균을 이용한 곡류 및 해조류 혼합 발효 추출물을 유효성분으로 포함하는 화장료 조성물","BT"],
+[2021,"10-2269205","치과용 보철물의 유지력 평가를 위한 베어링구조를 갖는 만능재료시험기용 지그","MD"],
+[2021,"10-2259645","구멍쇠미역 추출물을 포함하는 근력강화 또는 근감소증의 예방 및 치료용 조성물","NB"],
+[2021,"10-2258231","미나리 유래 폴리펩티드 및 상기 폴리펩티드를 포함하는 약학적 조성물","NB"],
+[2021,"10-2254131","다단 폴리머 클립 제거기","MD"],
+[2021,"10-2247809","청각 추출물 및 홍삼 추출물을 포함하는 후천성 면역 증진용 조성물","NB"],
+[2021,"10-2244375","입자와 용액의 동시 이동에 의한 분석물질을 검출하는 장치 및 이를 이용한 검출 방법","DX"],
+[2021,"10-2243712","청각 추출물 및 홍삼 추출물을 포함하는 선천성 면역 증진용 조성물","NB"],
+[2021,"10-2230597","이산화루테늄 및 이의 제조방법","SM"],
+[2021,"10-2228924","저칼로리 라이스바 및 이의 제조방법","FD"],
+[2021,"10-2219062","사면녹화 계단식 폴딩타입 지오매트","CS"],
+[2021,"10-2218582","수중 위치 인식 시스템","IC"],
+[2020,"US 10,842,727 B2","백장미 추출물 및 이로부터 분리된 가르타닌 유도체 화합물을 유효성분으로 포함하는 피부 미백 및 주름 개선용 화장료 조성물","BT"],
+[2020,"10-2182327","커피 실버스킨 추출물을 포함하는 근력강화 기능성 주류","FD"],
+[2020,"10-2180321","단조 공정 간의 시편의 장입 방향 표시 장치","ME"],
+[2020,"10-2177036","붉은멍게 근육 가수분해물 유래의 항알츠하이머성 펩타이드 조성물","NB"],
+[2020,"10-2177035","미끈뼈대그물말을 이용한 알츠하미성 치매 질환 예방 및 치료용 조성물","NB"],
+[2020,"10-2176272","커피 실버스킨 추출물을 포함하는 근력강화 또는 근감소증의 예방 및 치료용 조성물","NB"],
+[2020,"10-2162263","붉은 멍게 체벽 지방산을 유효성분으로 포함하는 항염증 또는 면역기능 증강용 조성물","NB"],
+[2020,"10-2161834","방사선 차폐용 채움재 조성물을 위한 중금속 용출 억제용 혼화제","CS"],
+[2020,"10-2155713","해삼 추출물 또는 이의 분획물, 및 TRAIL 단백질을 포함하는 암 예방 또는 치료용 조성물","NB"],
+[2020,"10-2152856","다슬기 산출 치패 사육을 위한 담수 부착 조류의 배양방법","AG"],
+[2020,"10-2150944","근력 강화 또는 근감소증 예방 및 치료용 조성물","NB"],
+[2020,"10-2150963","노면소음 저감을 위한 소입경 골재노출 콘크리트 포장 시공방법, 그에 따른 콘크리트 포장체","CS"],
+[2020,"10-2147820","토지의 동결 시험을 위한 냉각 시스템","CS"],
+[2020,"10-2139277","누에고치의 열수 추출물을 포함하는 혈관재생 촉진용 조성물 및 그의 제조방법","NB"],
+[2020,"10-2135231","안면 보철 장치 및 제조 방법","MD"],
+[2020,"10-2133415","직교진폭변조의 복조 장치 및 방법","IC"],
+[2020,"10-2133416","펄스진폭변조와 직교진폭변조의 대수우도비 생성 장치 및 방법","IC"],
+[2020,"10-2129461","부처손 추출물, 이의 분획물 또는 이로부터 분리된 화합물을 유효성분으로 함유하는 항산화 또는 항균용 조성물","NB"],
+[2020,"10-2121111","미국 풍나무 추출물을 포함하는 근력강화 또는 근감소증의 예방 및 치료용 조성물","NB"],
+[2020,"10-2120231","상태천이 다이어그램을 통한 센서노드 프로그램 자동 생성 방법","IC"],
+[2020,"10-2114232","방사선 차폐용 콘크리트 조성물","CS"],
+[2020,"10-2111141","블록체인을 기반으로 한 의료데이터 서비스 시스템 및 이를 이용한 의료데이터 서비스 방법","DH"],
+[2020,"10-2107983","복수의 모바일 가상 펜스를 이용한 커넥티드 카 서비스 방법","IC"],
+[2020,"10-2105448","자성 및 비자성 복합 부유물을 포함하는 자성유체를 이용한 고효율 연속발전 사이클 장치","EN"],
+[2020,"10-2102368","흡음패널 자동 성형 시스템","ME"],
+[2020,"10-2101251","빅데이터 분석 시스템 및 빅데이터 분석 방법","AI"],
+[2020,"10-2096859","유기용매의 실시간 분석이 가능한 광학 센서 및 유기용매를 실시간으로 분석하기 위한 방법","DX"],
+[2020,"10-2095389","에너지 사용 시설물의 고장 진단 시스템","EN"],
+[2020,"10-2087571","고강도 고비표면적 산업용 하니컴 탈취 필터","EN"],
+[2020,"10-2085741","커피 성분이 함유된 샴푸 및 이의 제조방법","BT"],
+[2020,"10-2085134","압축성 소재의 평균 반경방향 응력 및 압력-체적 관계를 결정하는 방법","ME"],
+[2020,"10-2078331","티타늄 임플란트 표면에 바이오 세라믹을 코팅하는 방법 및 이에 따라 제조된 티타늄 임플란트","MD"],
+[2020,"10-2075039","커넥티드 카 시스템의 2차 추돌사고 방지 방법","IC"],
+[2020,"10-2073714","봉합사용 도구 매듭장치","MD"],
+[2020,"10-2068772","다슬기 양식 수조의 바닥 찌꺼기 제거 장치 및 방법","AG"],
+[2019,"10-2063255","수중 위치 인식 시스템 및 방법","IC"],
+[2019,"10-2059041","자성 유체를 이용한 발전장치","EN"],
+[2019,"ZL201480078245.4","백장미 추출물 및 이로부터 분리된 가르타닌 유도체 화합물을 유효성분으로 포함하는 피부 미백 및 주름 개선용 화장료 조성물","BT"],
+[2019,"10-2054909","히마와리 8호 위성의 AHI 센서자료를 이용한 대기상단에서의 상향장파복사산출방법","EN"],
+[2019,"10-2047233","이중 부하 분산을 이용한 메타데이터 검색 시스템 및 이중 부하 분산을 통한 데이터베이스 관리 방법","AI"],
+[2019,"10-2042352","땅콩 껍질 추출물을 포함하는 근력강화 또는 근감소증의 예방 및 치료용 조성물","NB"],
+[2019,"10-2041462","해충 탐지 장치","AG"],
+[2019,"10-2028696","고 해상도 컨텐츠를 처리하는 컨텐츠 처리 장치 및 그 방법","AI"],
+[2019,"10-2025599","가스터빈 연소기용 음향 라이너 설계 방법 및 장치","ME"],
+[2019,"10-2023053","붉은 멍게 튜닉 지방산을 유효성분으로 포함하는 항염증 또는 면역기능 증강용 조성물","NB"],
+[2019,"10-2021756","모바일 디바이스 기반 커넥티드 카 서비스를 위한 긴급 메시지 전송 방법","IC"],
+[2019,"10-2021757","모바일 디바이스 기반 음영지역에서의 커넥티드 카 서비스 지원 방법","IC"],
+[2019,"10-2014948","모터 펌프를 이용한 액상 시료 순환식 소변 검사 장치","DX"],
+[2019,"10-2012302","모바일 디바이스를 이용한 커넥티드 카 서비스 지원 방법","IC"],
+[2019,"10-2012088","하수슬러지를 활용한 바이오연료 생산 공정","EN"],
+[2019,"10-2011343","GHz 대역의 전자파 차폐능을 가진 금속산화물/고분자 복합체 및 이를 이용하여 제조한 전자파 차폐재","SM"],
+[2019,"10-1999916","긴불레기말 추출물을 포함하는 근력 강화 또는 근감소증 예방 및 치료용 조성물","NB"],
+[2019,"10-1998301","멍게로부터 정제된 바나듐 결합 단백질 및 이를 포함한 기능성 식품 조성물","NB"],
+[2019,"ZL201410069540.5","펠리토린을 유효성분으로 포함하는 접촉성 피부염 개선용 조성물","BT"],
+[2019,"10-1988233","세포 검출장치 및 이를 이용한 세포 검출방법","DX"],
+[2019,"10-1987820","고 해상도 컨텐츠를 처리하는 컨텐츠 처리 장치 및 그 방법","AI"],
+[2019,"10-1981309","메탈실리콘으로 합성된 SiC 분말을 이용한 저온용 발열체 제조방법","SM"],
+[2019,"10-1980477","커피 실버스킨을 이용한 막걸리 및 이의 제조방법","FD"],
+[2019,"10-1979775","상하이동식 다중셀을 이용한 지반동결 시험장치","CS"],
+[2019,"10-1973572","사방댐 구조물","CS"],
+[2019,"10-1972273","차량 탑승자의 모바일 디바이스를 이용한 커넥티드 카 서비스 지원 방법 및 장치","IC"],
+[2019,"10-1972281","모바일 디바이스 기반 커넥티드 카 서비스를 위한 순서 결정 방법","IC"],
+[2019,"10-1970098","정지궤도 인공위성의 자외선 및 가시광선 영역의 관측 자료를 이용한 지표면 반사도 및 방향성 반사도 함수 결정 방법 및 시스템","EN"],
+[2019,"10-1966414","스크류 헤드 및 로드 동시 고정형 커넥터","MD"],
+[2019,"10-1949128","박테리아 검출 시스템 및 검출 방법","DX"],
+[2019,"10-1948702","직달일사 관측용 태양추적장치의 구동방법","EN"],
+[2019,"10-1945770","아로니아가 첨가된 블루베리청의 제조방법","FD"],
+[2019,"10-1942041","자성 유체를 이용한 발전장치","EN"],
+[2019,"10-1938596","여행용 가방","BT"],
+[2018,"10-1932685","과일크림소스 전복스테이크 및 이의 제조방법","FD"],
+[2018,"10-1930766","센서 데이터 선택 방법","IC"],
+[2018,"10-1918274","수중 센서 데이터의 손실 감소 및 복구 방법","IC"],
+[2018,"10-1911674","딸기에 대한 차압예냉용 패드 및 이를 포함하는 차압예냉 시스템","AG"],
+[2018,"10-1906940","보툴리눔 독소, 4-헥실레조르시놀 및 실크 피브로인을 포함하는 조성물","NB"],
+[2018,"10-1905617","탄성체의 압축물성 평가방법","ME"],
+[2018,"10-1897664","성곽 구조물 변위 측정 시스템","CS"],
+[2018,"10-1896285","구배 형성이 용이한 밀도 측정 장치","DX"],
+[2018,"10-1895597","정지 액체상 랩온어튜빙","DX"],
+[2018,"10-1894406","수평 대기투과도 계산을 위한 선형 대기투과도 모델 산출방법","EN"],
+[2018,"10-1893991","과립형 발포유리 형성 방법 및 이를 이용한 악취제거용 광촉매 제조방법","EN"],
+[2018,"10-1892167","저장성이 우수한 프로폴리스 첨가 오징어식해를 제조하기 위한 제조방법","FD"],
+[2018,"10-1889861","수륙양용드론을 이용한 환경 모니터링 시스템","EN"],
+[2018,"10-1886539","월면 영상분석을 이용한 지상에서의 야간 에어로졸 탐지 시스템 및 탐지 방법","EN"],
+[2018,"10-1870793","일라이트를 이용한 뮬라이트 휘스커의 제조방법 및 이를 이용하여 구현된 뮬라이트 휘스커","SM"],
+[2018,"10-1870794","스크류 헤드 및 로드 동시 고정형 커넥터","MD"],
+[2018,"10-1870559","직달일사계","EN"],
+[2018,"10-1857675","위생변기","BT"],
+[2018,"10-1856146","질의자 정보에 기반하여 해쉬를 생성 또는 정합하는 장치 및 방법","AI"],
+[2018,"10-1851879","메탈실리콘과 아크방전을 이용한 고순도 탄화규소의 제조방법","SM"],
+[2018,"10-1850967","타이타늄 스크랩의 재활용 방법","ME"],
+[2018,"10-1850915","직달일사 관측용 태양추적장치","EN"],
+[2018,"10-1850221","사물 인터넷을 위한 규칙기반 상황인식에 의한 3차원 지오펜스 서비스 시스템","IC"],
+[2018,"10-1850254","커넥티드 카 환경을 지원하기 위한 차량간 통신 시스템","IC"],
+[2018,"10-1847970","연성재료용 분리 홉킨슨 압력봉 시험장치","ME"],
+[2018,"10-1842793","헤스페레틴 유도체, 이의 제조방법 및 이를 유효성분으로 함유하는 항암 조성물","NB"],
+[2018,"10-1828682","3차원 대기환경 자료 생성 시스템 및 가시화 방법","EN"],
+[2018,"10-1826153","유도가열이 가능한 주방용기 및 그 제조방법","BT"],
+[2018,"10-1826154","유도가열이 가능한 주방용기 및 그 제조방법","BT"],
+[2018,"10-1826155","유도가열이 가능한 주방용기 및 그 제조방법","BT"],
+[2018,"10-1826156","유도가열이 가능한 주방용기 및 그 제조방법","BT"],
+[2018,"10-1826157","유도가열이 가능한 주방용기 및 그 제조방법","BT"],
+[2017,"10-1812094","음성 부호화 및 복호화 방법 및 장치","IC"],
+[2017,"10-1811296","자성유체를 이용한 고효율 연속발전 사이클 장치","EN"],
+[2017,"10-1810786","쿠도아충 검출용 PNA 프로브 세트","DX"],
+[2017,"10-1789769","외과 수술용 확장형 케이지","MD"],
+[2017,"10-1765311","고품질 오리 육포의 제조방법 및 이에 따라 제조된 오리 육포","FD"],
+[2017,"10-1757472","신규 버섯재배방법","AG"],
+[2017,"10-1749065","상온 발효가 가능한 엔테로코쿠스 파에시움 MSS2 및 이를 포함하는 조성물","FD"],
+[2017,"10-1741308","산화텅스텐 및 그 제조방법","SM"],
+[2017,"10-1721245","대기중의 눈 결정 촬영이 가능한 눈 결정 관측장치 및 이를 이용한 눈 결정 분석방법","EN"],
+[2017,"US 9,602,326 B2","송신 장치, 수신 장치, 신호 송신 방법 및 신호 수신 방법","IC"],
+[2017,"10-1707457","클로렐라 에탄올 추출물 내의 클로로필a의 함량을 증진시키는 방법","NB"],
+[2017,"10-1698372","해송이 버섯 죽 및 이의 제조방법","FD"],
+[2016,"10-1675091","석재 구조물의 이물질 제거 장치 및 그 제거 방법","CS"],
+[2016,"10-1667245","소수성 소재 간 상호 작용을 이용한 4-헥실레조르시놀의 이식재 내 투입 기술","MD"],
+[2016,"10-1661504","컨텐츠 변환 장치, 컨텐츠 변환 방법 및 기록매체","AI"],
+[2016,"10-1659895","소음 제어 및 감쇄 유도를 위한 장치 및 방법","ME"],
+[2016,"10-1651325","백장미 추출물 및 이로부터 분리된 가르타닌 유도체 화합물을 유효성분으로 포함하는 피부 미백 및 주름 개선용 화장료 조성물","BT"],
+[2016,"US 9,420,624 B2","무선 센서 네트워크 시스템 및 노드장치, 센싱 메시지 처리방법","IC"],
+[2016,"10-1643477","정지 액체상 랩온어칩 분석장치","DX"],
+[2016,"10-1637454","콘크리트 함침용 조성물 및 이를 이용한 콘크리트 도로구조물의 시공방법","CS"],
+[2016,"10-1627080","백장미 추출물 및 이로부터 분리된 가르타닌 유도체 화합물을 유효성분으로 포함하는 피부 미백 및 주름 개선용 화장료 조성물","BT"],
+[2016,"10-1620508","내진 보강용 FRP 패널 및 그 제조방법과 내진 보강용 FRP 패널을 이용한 시공방법","CS"],
+[2016,"10-1608598","정지 액체상 랩온어칩","DX"],
+[2016,"10-1608409","소지품 분실 방지방법 및 장치","IC"],
+[2016,"10-1603191","내진 보강용 FRP 내력패널 및 그 제조방법과 이를 이용한 시공방법","CS"],
+[2016,"10-1589835","실리콘-망간 합금 및 이의 제조방법","ME"],
+[2016,"10-1586000","대수우도비 산출 장치 및 방법","IC"],
+[2015,"10-1528135","백장미 추출물 또는 이로부터 분리된 피로갈롤 화합물을 유효성분으로 포함하는 아토피성 피부염 예방 또는 치료용 약제학적 조성물","NB"],
+[2015,"10-1522856","다기능 스마트 신발","BT"],
+[2015,"ZL200980145453.0","기능성 작용기를 물질의 표면에 도입하는 방법","SM"],
+[2014,"10-1453056","연안류 관측장치 및 그 운용방법","EN"],
+[2014,"10-1443008","딸기, 블루베리 및 천년초를 함유하는 가공식품 및 그 제조방법","FD"],
+[2014,"US 8,830,817 B2","무선 센서 네트워크의 경로 다중화 장치","IC"],
+[2014,"10-1439303","종방향 사방댐 구조물","CS"],
+[2014,"10-1437739","N-하이드록시이미드기를 물질의 표면에 도입하는 방법","SM"],
+[2014,"10-1409493","에드와드 균에 결합하는 펩티드, 그의 제조방법 및 이를 이용한 에드와드 균의 검출방법","DX"],
+[2014,"10-1398764","입자의 이동에 의해 분석물질을 검출하는 장치 및 방법","DX"],
+[2014,"10-1373480","해양심층수 소금을 이용한 명란젓의 제조방법","FD"],
+[2014,"10-1365676","지질을 이용한 고체 표면의 기능화 방법","SM"],
+[2014,"10-1353585","무선 센서 네트워크 시스템 및 노드장치, 센싱 메시지 처리방법","IC"],
+[2014,"10-1353125","근적외선 파장을 이용한 지표면 반사도 산출 방법","EN"],
+[2013,"US 8,589,907 B2","무선센서 네트워크의 노드에 대한 펌웨어 업데이트 방법 및 이에 사용되는 펌웨어 업데이트장치","IC"],
+[2013,"US 8,572,600 B2","무선센서 네트워크의 노드들에 대한 펌웨어 업데이트 방법","IC"],
+[2013,"10-1313868","복수의 중공형 구조체를 갖는 사방댐 구조물","CS"],
+[2013,"10-1307814","부유물 유실 및 침식 측정 장치","CS"],
+[2013,"US 8,478,314 B2","무선 센서 네트워크에서 모바일 센서 노드의 통신방법","IC"],
+[2013,"10-1281858","클로렐라 추출물을 함유한 간질환의 예방 또는 치료용 조성물","NB"],
+[2013,"10-1261402","무선 센서 네트워크에서 부모노드 선택 방법","IC"],
+[2013,"US 8,411,648 B2","양방향 데이터 통신이 가능한 이중 링크된 무선 센서 네트워크 및 데이터 송수신 방법","IC"],
+[2013,"10-1230650","홍어 껍질 유래의 알츠하이머 질병의 억제 또는 예방을 위한 조성물","NB"],
+[2013,"10-1227090","페라이트 서브마이크론 입자의 제조방법","SM"],
+[2012,"10-1182032","항산화 활성을 갖는 다시마 정유 추출물을 유효성분으로 함유하는 조성물","NB"],
+[2012,"US 8,208,485 B2","라우팅 방법 및 그에 따른 무선 네트워크 시스템","IC"],
+[2012,"US 8,203,981 B2","양방향 데이터 통신이 가능한 선형 구조를 갖는 무선센서 네트워크 및 그 방법","IC"],
+[2011,"10-1077624","하천용 옹벽","CS"],
+[2011,"10-1022195","무선 센서 네트워크에서 모바일 센서 노드의 통신방법","IC"],
+[2011,"10-1016140","다중 신호처리가 가능한 미세 질량 측정 시스템","DX"],
+[2010,"10-0951622","무선센서 네트워크의 노드에 대한 펌웨어 업데이트 방법 및 이에 사용되는 펌웨어 업데이트 장치","IC"],
+[2010,"10-0936130","무선센서 네트워크 시스템","IC"],
+[2009,"10-0930277","양방향 데이터 통신이 가능한 이중 링크된 무선 센서 네트워크 및 데이터 송수신 방법","IC"],
+[2009,"10-0925288","무선 센서 네트워크를 기반으로 한 실시간 원격 모니터링 시스템","IC"],
+[2009,"10-0902873","양방향 데이터 통신이 가능한 선형 구조를 갖는 무선 센서 네트워크 및 그 방법","IC"],
+[2009,"10-0895845","골재노출 도로포장용 콘크리트 조성물 및 이를 이용한 골재노출 콘크리트 도로포장의 시공방법","CS"],
+[2009,"10-0895288","골재노출 콘크리트 도로포장의 시공방법","CS"],
+[2007,"10-0774446","도로포장 구조물의 보수공법","CS"]
+];
+
+/* 같은 명칭(국내·해외 패밀리, 분할출원)은 한 카드로 묶는다 */
+const norm = s => s.replace(/\s+/g,"");
+const fam = new Map();
+RAW.forEach(([y,no,t,c])=>{
+  const k = norm(t)+"|"+c;
+  if(!fam.has(k)) fam.set(k,{id:"",title:t,cat:c,year:y,first:y,nums:[]});
+  const f = fam.get(k); f.nums.push(no); f.year=Math.max(f.year,y); f.first=Math.min(f.first,y);
+});
+const ITEMS = [...fam.values()].map(f=>{
+  const kr = f.nums.find(n=>/^10-\d{7}$/.test(n));
+  f.id = kr || f.nums[0];
+  return f;
+});
+function linkFor(f){
+  const kr = f.nums.find(n=>/^10-\d{7}$/.test(n));
+  if(kr) return "https://patents.google.com/patent/KR"+kr.replace("-","")+"B1/ko";
+  const us = f.nums.find(n=>/^(US )?\d{1,2},\d{3},\d{3}/.test(n));
+  if(us) return "https://patents.google.com/patent/US"+us.replace(/US |,| B2/g,"")+"B2/en";
+  return "https://patents.google.com/?q=%22"+encodeURIComponent(f.title)+"%22";
+}
+
+/* 상태 */
+const KEY="nts-pool-v1";
+let S={cat:"ALL",q:"",since:"0",sort:"new",picks:[],final:"",trl:"",f:{},s:{s1:3,s2:3,s3:3}};
+try{const v=JSON.parse(localStorage.getItem(KEY)||"null"); if(v) S=Object.assign(S,v);}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const byId=id=>ITEMS.find(i=>i.id===id);
+
+/* 탐색 */
+let shown=24;
+function filtered(){
+  const q=S.q.trim().toLowerCase();
+  let a=ITEMS.filter(i=>(S.cat==="ALL"||i.cat===S.cat)&&i.year>=+S.since&&(!q||i.title.toLowerCase().includes(q)||i.nums.join(" ").includes(q)));
+  if(S.sort==="new") a.sort((x,y)=>y.year-x.year||x.title.localeCompare(y.title,"ko"));
+  if(S.sort==="old") a.sort((x,y)=>x.year-y.year||x.title.localeCompare(y.title,"ko"));
+  if(S.sort==="title") a.sort((x,y)=>x.title.localeCompare(y.title,"ko"));
+  return a;
+}
+function renderRail(){
+  const counts={}; ITEMS.forEach(i=>{if(i.year>=+S.since) counts[i.cat]=(counts[i.cat]||0)+1});
+  const total=Object.values(counts).reduce((a,b)=>a+b,0);
+  const order=Object.keys(CATS).sort((a,b)=>(counts[b]||0)-(counts[a]||0));
+  $("rail").innerHTML=[["ALL","전체 분야",total],...order.map(k=>[k,CATS[k][0],counts[k]||0])]
+    .map(([k,n,c])=>`<button data-cat="${k}" aria-pressed="${S.cat===k}"><span>${n}</span><span class="n">${c}</span></button>`).join("");
+}
+function card(i){
+  const on=S.picks.includes(i.id);
+  const extra=i.nums.length>1?` 외 ${i.nums.length-1}건`:"";
+  return `<article class="card${on?" on":""}">
+    <div class="row"><span class="tag">${CATS[i.cat][0]}</span><span class="yr">${i.year===i.first?i.year:i.first+"–"+i.year}</span></div>
+    <h3>${esc(i.title)}</h3>
+    <div class="nums">${esc(i.id)}${extra}</div>
+    <div class="acts">
+      <button class="btn pick" data-pick="${esc(i.id)}" aria-pressed="${on}">${on?"담음 ✓":"관심 담기"}</button>
+      <a class="btn" href="${linkFor(i)}" target="_blank" rel="noopener">원문 보기 ↗</a>
+    </div></article>`;
+}
+function renderGrid(){
+  const a=filtered();
+  $("catdesc").textContent=S.cat==="ALL"?"분야를 고르면 해당 분야 설명과 기술만 표시됩니다. 원문 보기는 Google Patents에서 초록과 도면을 엽니다.":CATS[S.cat][1];
+  $("meta").textContent=`${a.length}개 기술 표시 중 · 관심 기술 ${S.picks.length}/3`;
+  $("grid").innerHTML=a.length?a.slice(0,shown).map(card).join(""):`<div class="empty">조건에 맞는 기술이 없습니다. 검색어를 줄이거나 등록연도를 ‘전체’로 바꿔 보세요.</div>`;
+  $("moreBtn").hidden=a.length<=shown;
+  $("moreBtn").textContent=`더 보기 (${a.length-shown}개 남음)`;
+  $("pickCnt").textContent=`${S.picks.length}/3`;
+}
+$("rail").addEventListener("click",e=>{const b=e.target.closest("button[data-cat]"); if(!b) return; S.cat=b.dataset.cat; shown=24; save(); renderRail(); renderGrid();});
+$("q").value=S.q; $("since").value=S.since; $("sort").value=S.sort;
+$("q").addEventListener("input",e=>{S.q=e.target.value; shown=24; save(); renderGrid();});
+$("since").addEventListener("change",e=>{S.since=e.target.value; shown=24; save(); renderRail(); renderGrid();});
+$("sort").addEventListener("change",e=>{S.sort=e.target.value; save(); renderGrid();});
+$("moreBtn").addEventListener("click",()=>{shown+=24; renderGrid();});
+$("grid").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-pick]"); if(!b) return;
+  const id=b.dataset.pick;
+  if(S.picks.includes(id)){S.picks=S.picks.filter(x=>x!==id); if(S.final===id) S.final="";}
+  else{ if(S.picks.length>=3){ $("meta").textContent="관심 기술은 3개까지 담을 수 있습니다. 팀 보고서 탭에서 하나를 빼고 다시 담아 주세요."; return;} S.picks.push(id);}
+  if(!S.final && S.picks.length===1) S.final=S.picks[0];
+  save(); renderGrid(); renderShort(); refresh();
+});
+
+/* 탭 */
+function showTab(t){
+  const ex=t==="explore";
+  $("tab-explore").setAttribute("aria-selected",ex); $("tab-ws").setAttribute("aria-selected",!ex);
+  $("view-explore").hidden=!ex; $("view-ws").hidden=ex; window.scrollTo(0,0);
+}
+$("tab-explore").onclick=()=>showTab("explore");
+$("tab-ws").onclick=()=>showTab("ws");
+
+/* 보고서 작성 */
+const TRL=[
+ ["기초연구",1,"기초 이론·실험으로 원리를 확인"],["기초연구",2,"원리를 응용할 기술 개념과 특허 아이디어 정립"],
+ ["실험",3,"실험실 규모에서 핵심 기능·성능 검증"],["실험",4,"실험실 규모 시작품(부품·시스템) 성능 평가"],
+ ["시작품",5,"확정된 사양으로 시작품 제작·성능 평가"],["시작품",6,"파일럿 규모 시작품을 실제 환경에서 평가"],
+ ["실용화",7,"신뢰성 평가와 수요처 평가 완료"],["실용화",8,"시제품 인증·표준화, 양산 준비"],
+ ["사업화",9,"양산 및 판매, 사업화 완료"]
+];
+let lastG="";
+$("trl").innerHTML=TRL.map(([g,n,d])=>{const h=g!==lastG?`<div class="grp">${g}</div>`:""; lastG=g;
+  return h+`<label><input type="radio" name="trl" value="${n}" id="trl${n}"><b>TRL${n}</b><span>${d}</span></label>`;}).join("");
+$("trl").addEventListener("change",e=>{S.trl=e.target.value; save(); refresh();});
+if(S.trl && $("trl"+S.trl)) $("trl"+S.trl).checked=true;
+
+const FIELDS=["team","item","members","why","plain","gap","problem","customer","alt","diff","product","value","revenue","license","mvp","tm","newip"];
+FIELDS.forEach(k=>{const el=$(k); el.value=S.f[k]||""; el.addEventListener("input",()=>{S.f[k]=el.value; save(); refresh();});});
+
+/* 근거 자료 */
+const EVTYPES=["뉴스 기사","시장 통계·보고서","경쟁 제품·서비스","논문·특허","정부 정책·공고","기타"];
+if(!Array.isArray(S.ev)||!S.ev.length) S.ev=[{},{},{}].map(()=>({type:"뉴스 기사",title:"",src:"",date:"",url:"",note:""}));
+const okUrl=u=>!u||/^https?:\/\/\S+\.\S+/.test(u.trim());
+function renderEv(){
+  $("ev").innerHTML=S.ev.map((r,n)=>`<div class="evrow" data-i="${n}">
+    <div class="head"><span>근거 ${n+1}</span><button class="btn" data-del="${n}" style="padding:3px 9px;font-size:12px">삭제</button></div>
+    <select data-k="type" id="ev-type-${n}" aria-label="근거 ${n+1} 유형">${EVTYPES.map(t=>`<option${t===r.type?" selected":""}>${t}</option>`).join("")}</select>
+    <input data-k="title" id="ev-title-${n}" placeholder="자료 제목" value="${esc(r.title||"")}" aria-label="근거 ${n+1} 제목">
+    <input data-k="src" id="ev-src-${n}" placeholder="매체·기관, 게시일 (예: 연합뉴스, 2026.09.01)" value="${esc(r.src||"")}" aria-label="근거 ${n+1} 출처">
+    <input class="full${okUrl(r.url)?"":" bad"}" data-k="url" id="ev-url-${n}" placeholder="URL (https://…)" value="${esc(r.url||"")}" aria-label="근거 ${n+1} URL">
+    <textarea class="full" data-k="note" id="ev-note-${n}" placeholder="이 자료가 보여주는 내용 (수치는 기준연도와 함께)" aria-label="근거 ${n+1} 핵심 내용">${esc(r.note||"")}</textarea>
+  </div>`).join("");
+}
+$("ev").addEventListener("input",e=>{const row=e.target.closest(".evrow"); const k=e.target.dataset.k; if(!row||!k) return;
+  S.ev[+row.dataset.i][k]=e.target.value; if(k==="url") e.target.classList.toggle("bad",!okUrl(e.target.value)); save(); refresh();});
+$("ev").addEventListener("change",e=>{if(e.target.tagName==="SELECT"){const row=e.target.closest(".evrow"); S.ev[+row.dataset.i].type=e.target.value; save(); refresh();}});
+$("ev").addEventListener("click",e=>{const b=e.target.closest("[data-del]"); if(!b) return; S.ev.splice(+b.dataset.del,1); save(); renderEv(); refresh();});
+$("addEv").addEventListener("click",()=>{if(S.ev.length>=10) return; S.ev.push({type:"뉴스 기사",title:"",src:"",date:"",url:"",note:""}); save(); renderEv(); refresh(); $("ev-title-"+(S.ev.length-1)).focus();});
+
+function renderShort(){
+  if(!S.picks.length){$("short").innerHTML=`<div class="empty">아직 담은 기술이 없습니다. ‘기술 탐색’ 탭에서 관심 기술을 최대 3개 담아 오세요.</div>`; return;}
+  $("short").innerHTML=S.picks.map(id=>{const i=byId(id); if(!i) return "";
+    return `<div class="it"><input type="radio" name="final" id="fin-${esc(id)}" value="${esc(id)}" ${S.final===id?"checked":""}>
+    <label for="fin-${esc(id)}"><span class="tag">${CATS[i.cat][0]}</span> ${esc(i.title)}<div class="nums">${esc(i.id)} · ${i.year} · <a href="${linkFor(i)}" target="_blank" rel="noopener">원문</a></div></label>
+    <button class="x" data-rm="${esc(id)}" aria-label="관심 기술에서 빼기">×</button></div>`;}).join("");
+}
+$("short").addEventListener("change",e=>{if(e.target.name==="final"){S.final=e.target.value; save(); refresh();}});
+$("short").addEventListener("click",e=>{const b=e.target.closest("[data-rm]"); if(!b) return; S.picks=S.picks.filter(x=>x!==b.dataset.rm); if(S.final===b.dataset.rm) S.final=S.picks[0]||""; save(); renderShort(); renderGrid(); refresh();});
+
+const filledEv=()=>S.ev.filter(r=>(r.title||"").trim()||(r.url||"").trim());
+function renderSide(){
+  const i=byId(S.final);
+  $("chosen").innerHTML=`<small>최종 선택 특허</small>`+(i?`<p>${esc(i.title)}</p><div class="nums">${esc(i.id)} · ${CATS[i.cat][0]}</div>`:`<p>아직 선택하지 않았습니다</p>`);
+  const f=S.f, has=k=>(f[k]||"").trim().length>0;
+  const steps=[["팀 정보·특허 선택",!!i&&has("team")&&has("why")],["기술 이해",has("plain")&&!!S.trl],["시장과 고객",has("problem")&&has("customer")&&has("diff")],[`근거 자료 ${filledEv().length}건`,filledEv().length>=3],["사업화 아이디어",has("product")&&has("revenue")]];
+  $("prog").innerHTML=steps.map(([n,ok])=>`<li><span class="dot${ok?" ok":""}"></span>${n}</li>`).join("");
+  $("dlnote").textContent="파일 이름: "+fileName();
+}
+const today=()=>{const d=new Date(); return d.getFullYear()+"."+String(d.getMonth()+1).padStart(2,"0")+"."+String(d.getDate()).padStart(2,"0");};
+const fileName=()=>"NTS_"+((S.f.team||"").trim().replace(/[\\/:*?"<>|\s]+/g,"_")||"팀명")+"_보유기술활용보고서.pdf";
+const para=s=>(s||"").trim()?esc(s.trim()).replace(/\n/g,"<br>"):`<span class="empty-v">(미작성)</span>`;
+
+function renderPaper(){
+  const f=S.f, i=byId(S.final), t=TRL.find(x=>String(x[1])===String(S.trl));
+  const others=S.picks.filter(id=>id!==S.final).map(byId).filter(Boolean);
+  const ev=filledEv();
+  $("paper").innerHTML=`
+  <div class="hdr">
+    <div class="eyebrow">2026 기술창업아카데미(NTS) · 강원대학교 강릉산학협력단 · 보유기술 활용 실습</div>
+    <h1>${para(f.item).replace('(미작성)','아이템명 미작성')} 사업화 보고서</h1>
+    <div class="kv"><b>팀명</b><span>${para(f.team)}</span><b>팀원</b><span>${para(f.members)}</span><b>작성일</b><span>${today()}</span></div>
+  </div>
+  <h2>1. 활용 특허</h2>
+  ${i?`<table><tr><th>명칭</th><td>${esc(i.title)}</td></tr><tr><th>등록번호</th><td>${esc(i.nums.join(", "))} (등록 ${i.first===i.year?i.year:i.first+"–"+i.year})</td></tr><tr><th>분야</th><td>${CATS[i.cat][0]}</td></tr><tr><th>원문</th><td><a href="${linkFor(i)}">${linkFor(i)}</a></td></tr></table>`:`<p class="empty-v">(특허 미선택)</p>`}
+  <p style="margin-top:6px"><b>선택 이유</b><br>${para(f.why)}</p>
+  ${others.length?`<p style="margin-top:4px"><b>검토한 후보 기술</b><br>${others.map(o=>esc(o.title)+" ("+esc(o.id)+")").join("<br>")}</p>`:""}
+  <h2>2. 기술 이해</h2>
+  <table><tr><th>한 문장 요약</th><td>${para(f.plain)}</td></tr><tr><th>현재 TRL(추정)</th><td>${t?"TRL "+t[1]+" · "+t[2]:'<span class="empty-v">(미선택)</span>'}</td></tr><tr><th>남은 과제</th><td>${para(f.gap)}</td></tr></table>
+  <h2>3. 시장과 고객</h2>
+  <table><tr><th>해결할 문제</th><td>${para(f.problem)}</td></tr><tr><th>목표 고객</th><td>${para(f.customer)}</td></tr><tr><th>대안·경쟁</th><td>${para(f.alt)}</td></tr><tr><th>차별점</th><td>${para(f.diff)}</td></tr></table>
+  <h2>4. 근거 자료 (${ev.length}건)</h2>
+  ${ev.length?`<table><tr><th style="width:24px">#</th><th style="width:92px">유형</th><th>자료 · 출처</th><th>핵심 내용</th></tr>${ev.map((r,n)=>`<tr><td>${n+1}</td><td>${esc(r.type)}</td><td>${esc(r.title||"(제목 없음)")}${(r.src||"").trim()?`<br><span style="color:#5a6f6b">${esc(r.src)}</span>`:""}${(r.url||"").trim()?`<br><a href="${esc(r.url.trim())}">${esc(r.url.trim())}</a>`:""}</td><td>${para(r.note)}</td></tr>`).join("")}</table>`:`<p class="empty-v">(근거 자료 미입력)</p>`}
+  <h2>5. 사업화 아이디어</h2>
+  <table><tr><th>제품·서비스</th><td>${para(f.product)}</td></tr><tr><th>가치제안</th><td>${para(f.value)}</td></tr><tr><th>수익모델</th><td>${para(f.revenue)}</td></tr><tr><th>MVP 계획</th><td>${para(f.mvp)}</td></tr><tr><th>기술이전(가정)</th><td>${para(f.license)}</td></tr><tr><th>상표 후보</th><td>${para(f.tm)}</td></tr><tr><th>개량특허 아이디어</th><td>${para(f.newip)}</td></tr></table>
+  <div class="foot">특허 목록 출처: 강원대학교 강릉산학협력단 지식재산권 공개 목록(2026.10.15 수집). 기술이전 가능 여부와 권리 상태는 산학협력단(tlo@kangwon.ac.kr) 확인이 필요합니다. 본 보고서는 교육 실습용입니다.</div>`;
+}
+function refresh(){renderSide(); renderPaper();}
+
+/* PDF 저장: claude.ai 안에서는 downloads 기능, 일반 웹에서는 브라우저 다운로드 */
+let downloadsApi=null;
+if(window.claude && window.claude.use){ window.claude.use("downloads").then(d=>{downloadsApi=d;}).catch(()=>{}); }
+else { $("printBtn").hidden=false; }
+$("printBtn").addEventListener("click",()=>{ $("tab-ws").click(); window.print(); });
+function note(m){$("dlnote").textContent=m;}
+$("pdfBtn").addEventListener("click",async()=>{
+  if(!S.final){note("먼저 활용할 특허를 1개 선택하세요."); return;}
+  if(typeof html2pdf==="undefined"){note("PDF 도구를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침하세요."); return;}
+  const btn=$("pdfBtn"); btn.disabled=true; btn.textContent="PDF 만드는 중…";
+  const opt={margin:[10,10,12,10],filename:fileName(),image:{type:"jpeg",quality:0.95},
+    html2canvas:{scale:2,backgroundColor:"#ffffff",useCORS:true},
+    jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr","h2",".kv"]}};
+  try{
+    if(downloadsApi){
+      const blob=await html2pdf().set(opt).from($("paper")).outputPdf("blob");
+      await downloadsApi.save({filename:fileName(),data:blob}); note("저장했습니다. 패들렛 팀 칸에 올려 주세요.");
+    } else if(window.claude){
+      note("이 화면에서는 파일 저장이 막혀 있습니다. 운영진이 안내한 웹 주소에서 다시 시도하세요.");
+    } else {
+      await html2pdf().set(opt).from($("paper")).save(); note("다운로드했습니다. 패들렛 팀 칸에 올려 주세요.");
+    }
+  }catch(e){ note(e&&e.code==="declined"?"저장을 취소했습니다.":"PDF 저장에 실패했습니다. ‘인쇄 창에서 PDF로 저장’을 이용하세요."); $("printBtn").hidden=false; }
+  btn.disabled=false; btn.textContent="PDF 다운로드";
+});
+
+let armed=false;
+$("resetBtn").addEventListener("click",()=>{
+  if(!armed){armed=true; $("resetBtn").textContent="한 번 더 누르면 모두 지웁니다"; setTimeout(()=>{armed=false; $("resetBtn").textContent="작성 내용 비우기";},3000); return;}
+  armed=false; S.f={}; S.trl=""; S.picks=[]; S.final=""; S.ev=[{},{},{}].map(()=>({type:"뉴스 기사",title:"",src:"",date:"",url:"",note:""}));
+  FIELDS.forEach(k=>$(k).value=""); document.querySelectorAll("#trl input").forEach(r=>r.checked=false);
+  $("resetBtn").textContent="작성 내용 비우기"; save(); renderEv(); renderShort(); renderGrid(); refresh();
+});
+
+renderRail(); renderGrid(); renderShort(); renderEv(); refresh();
+</script>
+</body>
+</html>
