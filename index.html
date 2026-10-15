@@ -132,26 +132,64 @@ aside.side{position:sticky;top:90px;display:flex;flex-direction:column;gap:12px}
 .dlbox .btn{justify-content:center;padding:10px 12px;font-size:14px}
 .dlnote{font-size:12.5px;color:var(--muted);margin:0}
 .paperwrap{overflow-x:auto;background:var(--line);border-radius:var(--r);padding:20px}
-/* 보고서 지면: 인쇄물이므로 테마와 무관하게 흰 종이·검정 글자로 고정 */
-#paper{width:720px;margin:0 auto;background:#ffffff;color:#1b2422;font-family:var(--font-body);font-size:12.5px;line-height:1.6;padding:34px 38px}
-#paper h1{font-size:19px;margin:0 0 2px;color:#0b4f47}
-#paper .eyebrow{font-size:11px;letter-spacing:.06em;color:#5a6f6b}
-#paper .hdr{border-bottom:2px solid #0b4f47;padding-bottom:10px;margin-bottom:14px}
-#paper .kv{display:grid;grid-template-columns:90px 1fr;gap:3px 12px;margin-top:8px}
-#paper .kv b{color:#5a6f6b;font-weight:600}
-#paper h2{font-size:14px;margin:18px 0 6px;color:#0b4f47;border-bottom:1px solid #cfdcd9;padding-bottom:3px}
-#paper table{width:100%;border-collapse:collapse;font-size:11.5px}
-#paper th,#paper td{border:1px solid #cfdcd9;padding:5px 7px;text-align:left;vertical-align:top}
-#paper th{background:#eef4f3;font-weight:600;white-space:nowrap}
-#paper a{color:#0b6e63;word-break:break-all}
-#paper p{margin:0 0 4px}
-#paper .empty-v{color:#9aa9a6}
-#paper .foot{margin-top:20px;padding-top:8px;border-top:1px solid #cfdcd9;font-size:10px;color:#6b7c79}
+/* 보고서 지면: 인쇄물이므로 테마와 무관하게 흰 종이 팔레트로 고정 */
+.sheet{width:775px;margin:0 auto;background:#ffffff;padding:48px 40px;box-shadow:0 1px 3px rgba(0,0,0,.12)}
+#paper{--pd:#0b4f47;--pa:#0b6e63;--ps:#e7f2ef;--pw:#f6faf9;--po:#c2571b;--pi:#1b2422;--pm:#5f716d;--pl:#d9e4e1;
+  width:auto;background:#ffffff;color:var(--pi);font-family:var(--font-body);font-size:11.5px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere}
+#paper *{box-sizing:border-box}
+#paper .cover{background:var(--pd);color:#ffffff;border-radius:10px;padding:22px 24px 20px;position:relative;overflow:hidden}
+#paper .cover:after{content:"";position:absolute;right:-40px;top:-60px;width:220px;height:220px;border-radius:50%;border:28px solid rgba(255,255,255,.06)}
+#paper .cover .ey{font-size:10px;letter-spacing:.12em;color:#9fd3c9;font-weight:600}
+#paper .cover h1{font-size:24px;line-height:1.3;margin:6px 0 2px;font-weight:700;color:#ffffff}
+#paper .cover .sub{font-size:12px;color:#cde6e1}
+#paper .cover .meta{display:flex;flex-wrap:wrap;gap:6px 18px;margin-top:14px;padding-top:12px;border-top:1px solid rgba(255,255,255,.18);font-size:11px;color:#e6f3f0}
+#paper .cover .meta b{color:#9fd3c9;font-weight:600;margin-right:6px}
+#paper .tiles{display:grid;grid-template-columns:1.35fr 1fr .8fr;gap:8px;margin:12px 0 4px}
+#paper .tile{background:var(--pw);border:1px solid var(--pl);border-radius:8px;padding:10px 12px;min-width:0}
+#paper .tile .k{font-size:9.5px;letter-spacing:.08em;color:var(--pm);font-weight:600}
+#paper .tile .v{font-size:13px;font-weight:700;color:var(--pd);margin-top:2px;line-height:1.35}
+#paper .tile .s{font-size:10px;color:var(--pm);margin-top:3px;font-family:var(--font-mono)}
+#paper .trlbar{display:grid;grid-template-columns:repeat(9,1fr);gap:2px;margin-top:6px}
+#paper .trlbar i{height:7px;border-radius:2px;background:#dfe8e6}
+#paper .trlbar i.on{background:var(--pa)}
+#paper .trlbar i.now{background:var(--po)}
+#paper .big{font-size:22px;font-weight:700;color:var(--pd);line-height:1.1}
+#paper .sec-h{display:flex;align-items:center;gap:9px;margin:20px 0 8px}
+#paper .sec-h .no{width:22px;height:22px;border-radius:50%;background:var(--pd);color:#ffffff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex:none}
+#paper .sec-h h2{font-size:14.5px;margin:0;color:var(--pd);font-weight:700}
+#paper .sec-h .tg{font-size:9.5px;font-family:var(--font-mono);color:var(--pa);border:1px solid var(--pl);border-radius:4px;padding:0 5px;margin-left:2px}
+#paper .sec-h .ln{flex:1;height:1px;background:var(--pl)}
+#paper .pat{border:1px solid var(--pl);border-left:4px solid var(--po);border-radius:6px;padding:10px 14px;background:#fffaf6}
+#paper .pat .t{font-size:13px;font-weight:700;line-height:1.45}
+#paper .pat .n{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:10px;color:var(--pm);margin-top:5px}
+#paper .pat .n span{font-family:var(--font-mono)}
+#paper .rows{border-top:1px solid var(--pl)}
+#paper .row{display:grid;grid-template-columns:108px 1fr;gap:12px;padding:7px 2px;border-bottom:1px solid var(--pl)}
+#paper .row .l{font-size:10.5px;font-weight:600;color:var(--pm)}
+#paper .row .c{min-width:0}
+#paper .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#paper .box{border:1px solid var(--pl);border-radius:6px;padding:9px 12px;min-width:0}
+#paper .box .l{font-size:10px;font-weight:700;color:var(--pa);letter-spacing:.04em;margin-bottom:2px}
+#paper .box.hl{background:var(--ps);border-color:var(--ps)}
+#paper .ev{display:grid;grid-template-columns:26px 1fr;gap:10px;padding:9px 0;border-bottom:1px solid var(--pl)}
+#paper .ev .i{width:22px;height:22px;border-radius:5px;background:var(--ps);color:var(--pd);font-weight:700;font-size:11px;display:flex;align-items:center;justify-content:center}
+#paper .ev .chip{display:inline-block;font-size:9.5px;font-weight:600;color:var(--pa);background:var(--ps);border-radius:3px;padding:0 6px;margin-right:6px;vertical-align:1px}
+#paper .ev .tt{font-weight:700}
+#paper .ev .src{font-size:10px;color:var(--pm)}
+#paper .ev .u{font-size:9.5px;font-family:var(--font-mono);color:var(--pa);word-break:break-all;margin-top:1px}
+#paper .ev .nt{margin-top:3px}
+#paper a{color:var(--pa);text-decoration:none}
+#paper .muted{color:var(--pm)}
+#paper .empty-v{color:#a7b5b2}
+#paper .foot{margin-top:22px;padding-top:9px;border-top:1px solid var(--pl);font-size:9px;color:var(--pm);line-height:1.55}
 @media print{
   header.top,footer,#view-explore,.intro,.ws>div>.sec,aside.side,.paperhead{display:none!important}
   #view-ws{display:block!important}
   .paperwrap{background:none;padding:0;overflow:visible}
-  #paper{width:auto;padding:0}
+  .sheet{width:auto;padding:0;box-shadow:none}
+  #paper{width:auto}
+  #paper .blk{break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
   body{background:#fff}
 }
 footer{border-top:1px solid var(--line);padding-block:18px;color:var(--muted);font-size:12.5px}
@@ -277,7 +315,7 @@ footer p{margin:4px 0;max-width:100ch}
     </div>
 
     <div class="sec paperhead" style="margin-top:8px"><h2>보고서 미리보기</h2><p class="hint" style="margin:0">입력하는 대로 갱신됩니다. 이 모습 그대로 PDF로 저장됩니다.</p></div>
-    <div class="paperwrap"><div id="paper"></div></div>
+    <div class="paperwrap"><div class="sheet"><div id="paper"></div></div></div>
   </section>
 </main>
 
@@ -288,7 +326,8 @@ footer p{margin:4px 0;max-width:100ch}
   </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
 const CATS = {
   NB:["바이오헬스 소재","해양·천연물 추출물, 신규 화합물 기반의 건강기능식품·의약 조성물. NTS(Natural Material Technology Startup) 주제와 가장 가까운 분야입니다."],
@@ -767,25 +806,60 @@ function renderPaper(){
   const f=S.f, i=byId(S.final), t=TRL.find(x=>String(x[1])===String(S.trl));
   const others=S.picks.filter(id=>id!==S.final).map(byId).filter(Boolean);
   const ev=filledEv();
+  const txt=k=>(f[k]||"").trim();
+  const secH=(n,title,tag)=>`<div class="sec-h"><span class="no">${n}</span><h2>${title}</h2>${tag?`<span class="tg">${tag}</span>`:""}<span class="ln"></span></div>`;
+  const row=(l,v)=>`<div class="row blk"><div class="l">${l}</div><div class="c">${para(v)}</div></div>`;
+  const box=(l,v,hl)=>`<div class="box${hl?" hl":""}"><div class="l">${l}</div>${para(v)}</div>`;
+  const trlBar=n=>`<div class="trlbar">${[1,2,3,4,5,6,7,8,9].map(k=>`<i class="${k<n?"on":k===n?"now":""}"></i>`).join("")}</div>`;
+  const evTypes=[...new Set(ev.map(r=>r.type))].join(" · ");
+
   $("paper").innerHTML=`
-  <div class="hdr">
-    <div class="eyebrow">2026 기술창업아카데미(NTS) · 강원대학교 강릉산학협력단 · 보유기술 활용 실습</div>
-    <h1>${para(f.item).replace('(미작성)','아이템명 미작성')} 사업화 보고서</h1>
-    <div class="kv"><b>팀명</b><span>${para(f.team)}</span><b>팀원</b><span>${para(f.members)}</span><b>작성일</b><span>${today()}</span></div>
+  <div class="cover blk">
+    <div class="ey">2026 기술창업아카데미 (NTS) · 보유기술 활용 사업화 보고서</div>
+    <h1>${txt("item")?esc(txt("item")):'<span style="opacity:.55">아이템명을 입력하세요</span>'}</h1>
+    <div class="sub">강원대학교 강릉산학협력단 보유특허 기반 기술창업 실습</div>
+    <div class="meta"><span><b>팀명</b>${txt("team")?esc(txt("team")):"-"}</span><span><b>팀원</b>${txt("members")?esc(txt("members")):"-"}</span><span><b>작성일</b>${today()}</span></div>
   </div>
-  <h2>1. 활용 특허</h2>
-  ${i?`<table><tr><th>명칭</th><td>${esc(i.title)}</td></tr><tr><th>등록번호</th><td>${esc(i.nums.join(", "))} (등록 ${i.first===i.year?i.year:i.first+"–"+i.year})</td></tr><tr><th>분야</th><td>${CATS[i.cat][0]}</td></tr><tr><th>원문</th><td><a href="${linkFor(i)}">${linkFor(i)}</a></td></tr></table>`:`<p class="empty-v">(특허 미선택)</p>`}
-  <p style="margin-top:6px"><b>선택 이유</b><br>${para(f.why)}</p>
-  ${others.length?`<p style="margin-top:4px"><b>검토한 후보 기술</b><br>${others.map(o=>esc(o.title)+" ("+esc(o.id)+")").join("<br>")}</p>`:""}
-  <h2>2. 기술 이해</h2>
-  <table><tr><th>한 문장 요약</th><td>${para(f.plain)}</td></tr><tr><th>현재 TRL(추정)</th><td>${t?"TRL "+t[1]+" · "+t[2]:'<span class="empty-v">(미선택)</span>'}</td></tr><tr><th>남은 과제</th><td>${para(f.gap)}</td></tr></table>
-  <h2>3. 시장과 고객</h2>
-  <table><tr><th>해결할 문제</th><td>${para(f.problem)}</td></tr><tr><th>목표 고객</th><td>${para(f.customer)}</td></tr><tr><th>대안·경쟁</th><td>${para(f.alt)}</td></tr><tr><th>차별점</th><td>${para(f.diff)}</td></tr></table>
-  <h2>4. 근거 자료 (${ev.length}건)</h2>
-  ${ev.length?`<table><tr><th style="width:24px">#</th><th style="width:92px">유형</th><th>자료 · 출처</th><th>핵심 내용</th></tr>${ev.map((r,n)=>`<tr><td>${n+1}</td><td>${esc(r.type)}</td><td>${esc(r.title||"(제목 없음)")}${(r.src||"").trim()?`<br><span style="color:#5a6f6b">${esc(r.src)}</span>`:""}${(r.url||"").trim()?`<br><a href="${esc(r.url.trim())}">${esc(r.url.trim())}</a>`:""}</td><td>${para(r.note)}</td></tr>`).join("")}</table>`:`<p class="empty-v">(근거 자료 미입력)</p>`}
-  <h2>5. 사업화 아이디어</h2>
-  <table><tr><th>제품·서비스</th><td>${para(f.product)}</td></tr><tr><th>가치제안</th><td>${para(f.value)}</td></tr><tr><th>수익모델</th><td>${para(f.revenue)}</td></tr><tr><th>MVP 계획</th><td>${para(f.mvp)}</td></tr><tr><th>기술이전(가정)</th><td>${para(f.license)}</td></tr><tr><th>상표 후보</th><td>${para(f.tm)}</td></tr><tr><th>개량특허 아이디어</th><td>${para(f.newip)}</td></tr></table>
-  <div class="foot">특허 목록 출처: 강원대학교 강릉산학협력단 지식재산권 공개 목록(2026.10.15 수집). 기술이전 가능 여부와 권리 상태는 산학협력단(tlo@kangwon.ac.kr) 확인이 필요합니다. 본 보고서는 교육 실습용입니다.</div>`;
+
+  <div class="tiles blk">
+    <div class="tile"><div class="k">활용 특허</div><div class="v">${i?CATS[i.cat][0]:'<span class="empty-v">미선택</span>'}</div><div class="s">${i?esc(i.id):"-"}</div></div>
+    <div class="tile"><div class="k">기술성숙도 (추정)</div><div class="v">${t?"TRL "+t[1]+" · "+t[0]:'<span class="empty-v">미선택</span>'}</div>${trlBar(t?t[1]:0)}</div>
+    <div class="tile"><div class="k">근거 자료</div><div class="big">${ev.length}<span style="font-size:12px;font-weight:600"> 건</span></div><div class="s" style="font-family:var(--font-body)">${esc(evTypes)||"-"}</div></div>
+  </div>
+
+  <div class="blk">${secH(1,"활용 특허","TE-①")}
+  ${i?`<div class="pat"><div class="t">${esc(i.title)}</div><div class="n"><span>등록번호 ${esc(i.nums.join(", "))}</span><span>등록 ${i.first===i.year?i.year:i.first+"–"+i.year}</span><span>원문 <a href="${linkFor(i)}">patents.google.com</a></span></div></div>`:`<p class="empty-v">(특허 미선택)</p>`}</div>
+  <div class="rows" style="margin-top:8px">
+    ${row("선택 이유",f.why)}
+    ${others.length?`<div class="row blk"><div class="l">검토한 후보</div><div class="c muted">${others.map(o=>esc(o.title)).join("<br>")}</div></div>`:""}
+  </div>
+
+  <div class="blk">${secH(2,"기술 이해","TX")}
+  <div class="rows">${row("한 문장 요약",f.plain)}</div></div>
+  <div class="rows" style="border-top:0">
+    <div class="row blk"><div class="l">현재 TRL</div><div class="c">${t?`<b>TRL ${t[1]}</b> · ${t[2]}`:'<span class="empty-v">(미선택)</span>'}</div></div>
+    ${row("남은 과제",f.gap)}
+  </div>
+
+  <div class="blk">${secH(3,"시장과 고객","MX")}
+  <div class="grid2">${box("해결할 문제",f.problem,true)}${box("목표 고객",f.customer,true)}</div></div>
+  <div class="grid2 blk" style="margin-top:8px">${box("현재 대안·경쟁",f.alt)}${box("우리의 차별점",f.diff)}</div>
+
+  ${ev.length?ev.map((r,n)=>`<div class="blk">${n===0?secH(4,"근거 자료",ev.length+"건"):""}<div class="ev"${n===0?' style="border-top:1px solid var(--pl)"':""}><div class="i">${n+1}</div><div>
+      <div><span class="chip">${esc(r.type)}</span><span class="tt">${esc((r.title||"").trim()||"(제목 없음)")}</span></div>
+      ${(r.src||"").trim()?`<div class="src">${esc(r.src.trim())}</div>`:""}
+      ${(r.url||"").trim()?`<div class="u"><a href="${esc(r.url.trim())}">${esc(r.url.trim())}</a></div>`:""}
+      ${(r.note||"").trim()?`<div class="nt">${para(r.note)}</div>`:""}
+    </div></div></div>`).join(""):`<div class="blk">${secH(4,"근거 자료","")}<p class="empty-v">(근거 자료 미입력)</p></div>`}
+
+  <div class="blk">${secH(5,"사업화 아이디어","BM · IP")}
+  <div class="grid2">${box("제품·서비스",f.product,true)}${box("핵심 가치제안",f.value,true)}</div></div>
+  <div class="grid2 blk" style="margin-top:8px">${box("수익모델",f.revenue)}${box("MVP·프로토타입 계획",f.mvp)}</div>
+  <div class="rows blk" style="margin-top:10px">
+    ${row("기술이전(가정)",f.license)}${row("상표 후보",f.tm)}${row("개량특허 아이디어",f.newip)}
+  </div>
+
+  <div class="foot blk">특허 목록 출처: 강원대학교 강릉산학협력단 지식재산권 공개 목록(2026.10.15 수집). 기술이전 가능 여부와 권리 상태는 산학협력단 기술경영(tlo@kangwon.ac.kr, 033-640-2838) 확인이 필요합니다. 본 보고서는 2026 기술창업아카데미(NTS) 교육 실습 결과물입니다.</div>`;
 }
 function refresh(){renderSide(); renderPaper();}
 
@@ -795,22 +869,55 @@ if(window.claude && window.claude.use){ window.claude.use("downloads").then(d=>{
 else { $("printBtn").hidden=false; }
 $("printBtn").addEventListener("click",()=>{ $("tab-ws").click(); window.print(); });
 function note(m){$("dlnote").textContent=m;}
+/* PDF 생성: 보고서를 화면 밖 고정 위치에 복제해 캡처하고(스크롤 위치와 무관), 블록 경계에서 A4 쪽을 나눈다 */
+const PDF={W:210,H:297,mt:14,mb:16,ml:13,mr:13,px:695};
+async function buildPdf(){
+  if(document.fonts&&document.fonts.ready) await document.fonts.ready;
+  const host=document.createElement("div");
+  host.style.cssText="position:fixed;left:0;top:0;width:"+PDF.px+"px;background:#fff;z-index:-1;pointer-events:none";
+  const clone=$("paper").cloneNode(true); clone.id="paper"; $("paper").id="paper-live";
+  host.appendChild(clone); document.body.appendChild(host);
+  try{
+    const scale=2, mmPerPx=(PDF.W-PDF.ml-PDF.mr)/PDF.px, pageH=Math.floor((PDF.H-PDF.mt-PDF.mb)/mmPerPx);
+    const base=clone.getBoundingClientRect(), total=Math.ceil(clone.scrollHeight);
+    /* 쪽 나눔 위치: 가장 바깥 .blk의 위쪽 경계 */
+    const blks=[...clone.querySelectorAll(".blk")].filter(b=>!b.parentElement.closest(".blk"))
+      .map(b=>{const r=b.getBoundingClientRect(); return {top:r.top-base.top,bottom:r.bottom-base.top};});
+    const cuts=[0]; let start=0;
+    for(const b of blks){
+      while(b.bottom-start>pageH){
+        if(b.top>start+1 && b.top-start<=pageH){start=Math.floor(b.top);} else {start=start+pageH;}
+        cuts.push(start);
+      }
+    }
+    if(total-start>pageH){ while(total-start>pageH){start+=pageH; cuts.push(start);} }
+    const canvas=await html2canvas(clone,{scale,backgroundColor:"#ffffff",useCORS:true,scrollX:0,scrollY:0,windowWidth:PDF.px+40,width:PDF.px,height:total});
+    const pdf=new jspdf.jsPDF({unit:"mm",format:"a4",orientation:"portrait"});
+    const links=[...clone.querySelectorAll("a[href]")].map(a=>{const r=a.getBoundingClientRect(); return {url:a.href,x:r.left-base.left,y:r.top-base.top,w:r.width,h:r.height};});
+    cuts.forEach((y0,n)=>{
+      const y1=n+1<cuts.length?cuts[n+1]:total, h=Math.max(1,y1-y0);
+      const pc=document.createElement("canvas"); pc.width=canvas.width; pc.height=Math.round(h*scale);
+      const ctx=pc.getContext("2d"); ctx.fillStyle="#fff"; ctx.fillRect(0,0,pc.width,pc.height);
+      ctx.drawImage(canvas,0,Math.round(y0*scale),canvas.width,pc.height,0,0,pc.width,pc.height);
+      if(n>0) pdf.addPage();
+      pdf.addImage(pc.toDataURL("image/jpeg",0.95),"JPEG",PDF.ml,PDF.mt,PDF.px*mmPerPx,h*mmPerPx);
+      links.filter(l=>l.y>=y0&&l.y+l.h<=y1).forEach(l=>pdf.link(PDF.ml+l.x*mmPerPx,PDF.mt+(l.y-y0)*mmPerPx,l.w*mmPerPx,l.h*mmPerPx,{url:l.url}));
+    });
+    const n=pdf.internal.getNumberOfPages();
+    for(let p=1;p<=n;p++){ pdf.setPage(p); pdf.setFontSize(7.5); pdf.setTextColor(130,145,141);
+      pdf.text("2026 NTS Technology Startup Academy",PDF.ml,PDF.H-8); pdf.text(p+" / "+n,PDF.W-PDF.mr,PDF.H-8,{align:"right"}); }
+    return pdf;
+  } finally { host.remove(); $("paper-live").id="paper"; }
+}
 $("pdfBtn").addEventListener("click",async()=>{
   if(!S.final){note("먼저 활용할 특허를 1개 선택하세요."); return;}
-  if(typeof html2pdf==="undefined"){note("PDF 도구를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침하세요."); return;}
+  if(typeof html2canvas==="undefined"||typeof jspdf==="undefined"){note("PDF 도구를 불러오지 못했습니다. 인터넷 연결을 확인한 뒤 새로고침하세요."); return;}
+  if(window.claude && !downloadsApi){note("이 화면에서는 파일 저장이 막혀 있습니다. 운영진이 안내한 웹 주소에서 다시 시도하세요."); return;}
   const btn=$("pdfBtn"); btn.disabled=true; btn.textContent="PDF 만드는 중…";
-  const opt={margin:[10,10,12,10],filename:fileName(),image:{type:"jpeg",quality:0.95},
-    html2canvas:{scale:2,backgroundColor:"#ffffff",useCORS:true},
-    jsPDF:{unit:"mm",format:"a4",orientation:"portrait"},pagebreak:{mode:["css","legacy"],avoid:["tr","h2",".kv"]}};
   try{
-    if(downloadsApi){
-      const blob=await html2pdf().set(opt).from($("paper")).outputPdf("blob");
-      await downloadsApi.save({filename:fileName(),data:blob}); note("저장했습니다. 패들렛 팀 칸에 올려 주세요.");
-    } else if(window.claude){
-      note("이 화면에서는 파일 저장이 막혀 있습니다. 운영진이 안내한 웹 주소에서 다시 시도하세요.");
-    } else {
-      await html2pdf().set(opt).from($("paper")).save(); note("다운로드했습니다. 패들렛 팀 칸에 올려 주세요.");
-    }
+    const pdf=await buildPdf();
+    if(downloadsApi){ await downloadsApi.save({filename:fileName(),data:pdf.output("blob")}); note("저장했습니다. 패들렛 팀 칸에 올려 주세요."); }
+    else { pdf.save(fileName()); note("다운로드했습니다. 패들렛 팀 칸에 올려 주세요."); }
   }catch(e){ note(e&&e.code==="declined"?"저장을 취소했습니다.":"PDF 저장에 실패했습니다. ‘인쇄 창에서 PDF로 저장’을 이용하세요."); $("printBtn").hidden=false; }
   btn.disabled=false; btn.textContent="PDF 다운로드";
 });
